@@ -55,5 +55,10 @@ A small application to demonstrate how to use `pydomkeys`.  PetNet Application .
 
 test the endpoints
 
+## Misc
+
+* consider making this a submodule of pydomkeys? $ git submodule add https://github.com/darrylwest/petnet-app
+* consider a submodule of pydomkeys? $ git submodule add https://github.com/darrylwest/pydomkeys
+
 
 ###### darryl.west | 2023.09.09

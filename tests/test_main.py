@@ -3,6 +3,8 @@
 import pytest
 import sys
 from rich import inspect
+import tomllib
+from pathlib import Path
 
 from petnet_app import main
 
@@ -27,3 +29,16 @@ async def test_info():
     result = await main.info()
     inspect(result)
     assert "pid" in result
+
+
+def test_version():
+    from petnet_app import __version__ as vers
+
+    assert vers == "0.1.0"
+    with Path.open(
+        "./pyproject.toml",
+        "rb",
+    ) as f:
+        project = tomllib.load(f)
+
+    assert vers == project["tool"]["poetry"]["version"]

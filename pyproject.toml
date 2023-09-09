@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "petnet-app"
 version = "0.1.0"
-description = ""
+description = "A small application to demonstrate how to use `pydomkeys`."
 authors = ["darryl west <darryl.west@raincitysoftware.com>"]
 readme = "README.md"
 license = "MIT"

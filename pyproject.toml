@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "petnet-app"
 version = "0.1.0"
-description = "A small application to demonstrate how to use `pydomkeys`."
+description = ""
 authors = ["darryl west <darryl.west@raincitysoftware.com>"]
 readme = "README.md"
 license = "MIT"
-packages = [{include = "petnet-app"}]
+packages = [{include = "petnet_app"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -14,7 +14,6 @@ fastapi = {extras = ["all"], version = "^0.103.1"}
 # redis = {extras = ["hiredis"], version = "^5.0.0"}
 pickledb = "^0.9.2"
 uvicorn = "^0.23.2"
-pydomkeys = {git = "https://github.com/darrylwest/pydomkeys.git"}
 
 
 [tool.poetry.group.dev.dependencies]

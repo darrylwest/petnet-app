@@ -41,7 +41,7 @@ def test_home():
 
 
 def test_ping():
-    url = f"{host}/ping"
+    url = f"{host}/api/ping"
     print(f"test_ping() {url}")
     response = httpx.get(url, headers=create_headers())
 
@@ -53,7 +53,24 @@ def test_ping():
     if verbose:
         inspect(response)
 
-    # assert response.status_code == 200
+    assert "pong" in response.text
+
+
+def test_info():
+    url = f"{host}/api/info"
+    print(f"test_info() {url}")
+    response = httpx.get(url, headers=create_headers())
+
+    if response.status_code != 200:
+        inspect(response)
+        print(f"text: {response.text}, status code: {response.status_code}")
+
+    assert response.status_code == 200
+    if verbose:
+        inspect(response)
+
+    info = response.json()
+    assert int(info.get("pid", 0)) > 0
 
 
 def main(args: list) -> None:
@@ -61,6 +78,7 @@ def main(args: list) -> None:
 
     test_home()
     test_ping()
+    test_info()
 
 
 if __name__ == "__main__":

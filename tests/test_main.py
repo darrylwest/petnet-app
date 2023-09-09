@@ -12,11 +12,18 @@ async def test_home():
     request = {}
     result = await main.home(request)
     inspect(result)
-    assert True
+    assert "home" in result
 
 
 @pytest.mark.asyncio
 async def test_ping():
     result = await main.ping()
     inspect(result)
-    assert True
+    assert "pong" in result
+
+
+@pytest.mark.asyncio
+async def test_info():
+    result = await main.info()
+    inspect(result)
+    assert "pid" in result

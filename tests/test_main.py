@@ -6,6 +6,7 @@ from rich import inspect
 import tomllib
 from pathlib import Path
 
+
 from petnet_app import main
 
 
@@ -42,3 +43,13 @@ def test_version():
         project = tomllib.load(f)
 
     assert vers == project["tool"]["poetry"]["version"]
+
+
+def test_keygen():
+    from pydomkeys.keys import KeyGen
+
+    keygen = KeyGen.create("XX", 4)
+    inspect(keygen)
+    key = keygen.route_key()
+    inspect(key)
+    assert len(key) == 16

@@ -36,3 +36,5 @@ def test_create_user():
     inspect(model)
     assert model.first_name == "First"
     assert model.last_name == "Last"
+
+    print(model.model_dump_json())

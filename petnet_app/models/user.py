@@ -9,8 +9,7 @@ from pydomkeys.keys import KeyGen
 keygen = KeyGen.create("US", 4)
 
 
-@dataclass
-class Version:
+class Version(BaseModel):
     create_date: int
     last_update: int
     version: int
@@ -18,6 +17,7 @@ class Version:
 
 class UserModel(BaseModel):
     key: str
+    version: Version
     first_name: str
     last_name: str
     email: EmailStr

@@ -7,6 +7,29 @@ import time
 from datetime import datetime, timezone
 from pydomkeys.keys import KeyGen
 from petnet_app.models.user import Version, UserModel, keygen
+from faker import Faker
+
+# TODO(dpw): put this into a library...
+fake = Faker()
+today = datetime.now(tz=timezone.utc)
+
+
+def birth_year(min_age: int = 20, max_age: int = 100):
+    return today.year - fake.random_int(min_age, max_age)
+
+
+def fake_phone() -> str:
+    return f"{fake.random_int(100,999)}-{fake.random_int(100,999)}-{fake.random_int(1000, 9999)}"
+
+
+def fake_person() -> tuple:
+    """return first, last and eamil"""
+    fname = fake.first_name()
+    lname = fake.last_name()
+    suffix = f"{fake.random_digit_above_two()}{fake.random_digit()}"
+    email = f"{fname.lower()}.{lname.lower()}-{suffix}@{fake.domain_name()}"
+
+    return (fname, lname, email)
 
 
 def create_user_model() -> UserModel:
@@ -18,13 +41,15 @@ def create_user_model() -> UserModel:
     )
 
     key = keygen.route_key()
+    first_name, last_name, email = fake_person()
     model = UserModel(
         key=key,
         version=version,
-        first_name="First",
-        last_name="Last",
-        email="first@gmail.com",
-        phone="555-111-2222",
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        phone=fake_phone(),
+        birth_year=birth_year(),
         status="new",
     )
 
@@ -34,7 +59,7 @@ def create_user_model() -> UserModel:
 def test_create_user():
     model = create_user_model()
     inspect(model)
-    assert model.first_name == "First"
-    assert model.last_name == "Last"
+    assert len(model.first_name) > 1
+    assert len(model.last_name) > 1
 
     print(model.model_dump_json())

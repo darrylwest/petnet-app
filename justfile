@@ -47,6 +47,8 @@ mypy:
 refurb:
     poetry run refurb petnet_app/ tests/
 
+repl:
+    poetry run bpython -i .repl-start.py
 
 precommit:
     clear

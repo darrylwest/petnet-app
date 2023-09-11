@@ -35,7 +35,7 @@ httpx = "^0.24.1"
 # Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
 # McCabe complexity (`C901`) by default.
 select = ["E", "F", "N", "D", "S", "B", "A", "COM", "C4", "ICN", "ARG", "PTH", "TD", "ERA", "PD", "PL", "NPY", "AIR", "PERF", "RUF"]
-ignore = ['TD003', 'D203', 'D205', 'D213', 'D413', 'D406']
+ignore = ['TD003', 'D203', 'D205', 'D213', 'D413', 'D406', ]
 
 fix = false
 # Allow autofix for all enabled rules (when `--fix`) is provided.
@@ -68,11 +68,11 @@ exclude = [
     "node_modules",
     "venv",
 ]
-per-file-ignores = {}
-
+per-file-ignores = { "user.py" = ['PLR0913'] }
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
 
 [build-system]
 requires = ["poetry-core"]

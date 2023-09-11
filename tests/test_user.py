@@ -63,6 +63,7 @@ def test_user():
 
     print(model.model_dump_json())
 
+
 def test_create():
     user = create_user_model()
     model = UserModel.create(
@@ -77,4 +78,3 @@ def test_create():
     assert len(model.last_name) > 1
     assert model.version.create_date == model.version.last_update
     assert model.version.version == 0
-    

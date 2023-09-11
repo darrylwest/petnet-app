@@ -1,8 +1,9 @@
 """User model."""
 
 
-from pydantic import BaseModel, EmailStr 
 from typing import Self
+
+from pydantic import BaseModel, EmailStr
 from pydomkeys.keys import KeyGen
 
 from petnet_app.models.version import Version
@@ -24,7 +25,15 @@ class UserModel(BaseModel):
     status: str
 
     @classmethod
-    def create(cls, first_name: str, last_name: str, email: EmailStr, phone: str, birth_year: int) -> Self:
+    def create(
+        cls,
+        first_name: str,
+        last_name: str,
+        email: EmailStr,
+        phone: str,
+        birth_year: int,
+    ) -> Self:
+        """Create a new user model and assign new key, version and set status."""
         key = keygen.route_key()
         version = Version.create()
         status = "new"

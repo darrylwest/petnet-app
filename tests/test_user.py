@@ -4,7 +4,7 @@ from rich import inspect
 import time
 
 from tests.fake_data_store import FakeDataStore
-from petnet_app.models.user import Version, UserModel, keygen
+from petnet_app.models.user import Version, UserModel, keygen, Status
 
 
 fake = FakeDataStore()
@@ -28,7 +28,7 @@ def create_user_model() -> UserModel:
         email=email,
         phone=fake.phone(),
         birth_year=fake.birth_year(),
-        status="new",
+        status=Status("new", 128),
     )
 
     return model

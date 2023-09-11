@@ -4,7 +4,7 @@ import time
 from datetime import datetime, timezone
 from faker import Faker
 
-from petnet_app.models.user import Version, UserModel, keygen
+from petnet_app.models.user import Version, UserModel, keygen, Status
 
 
 class FakeDataStore:
@@ -46,7 +46,7 @@ class FakeDataStore:
             email=email,
             phone=self.phone(),
             birth_year=self.birth_year(),
-            status="new",
+            status=Status("new", 0),
         )
 
         return model

@@ -1,18 +1,16 @@
 """User model."""
 
 
-from collections import namedtuple
 from typing import Self
 
 from pydantic import BaseModel, EmailStr
 from pydomkeys.keys import KeyGen
 
+from petnet_app.models.status import Status
 from petnet_app.models.version import Version
 
 # the user keygen
 keygen = KeyGen.create("US", 4)
-
-Status = namedtuple("Status", "label value")
 
 
 class UserModel(BaseModel):
@@ -35,6 +33,7 @@ class UserModel(BaseModel):
         email: EmailStr,
         phone: str,
         birth_year: int,
+        status: Status,
     ) -> Self:
         """Create a new user model and assign new key, version and set status."""
         key = keygen.route_key()
@@ -47,5 +46,5 @@ class UserModel(BaseModel):
             email=email,
             phone=phone,
             birth_year=birth_year,
-            status=Status("new", 0),
+            status=status,
         )

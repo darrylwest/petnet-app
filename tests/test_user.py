@@ -61,3 +61,32 @@ def test_create():
     assert model.version.version == 0
     assert model.status.label == "active"
     assert model.status.value == 128
+
+
+def test_update():
+    model = fake.user_model()
+
+    inspect(model)
+    assert model.version.create_date == model.version.last_update
+
+    # TODO(dpw): test that an attempt to change a field will raise and exception
+
+    first_name, last_name, email = fake.person()
+
+    updated = model.update(
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        phone=fake.phone(),
+        birth_year=model.birth_year,
+        status=Status.active(0),
+    )
+
+    assert updated.key == model.key
+    assert updated.version == model.version
+    assert updated.first_name == first_name
+    assert updated.last_name == last_name
+    assert updated.email == email
+    assert updated.birth_year == model.birth_year
+    assert updated.status.label == "active"
+    assert updated.status.value == 0

@@ -13,7 +13,7 @@ from petnet_app.models.version import Version
 keygen = KeyGen.create("US", 4)
 
 
-class UserModel(BaseModel):
+class UserModel(BaseModel, frozen=True):
     """User data model."""
 
     key: str
@@ -41,6 +41,27 @@ class UserModel(BaseModel):
         return cls(
             key=key,
             version=version,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            phone=phone,
+            birth_year=birth_year,
+            status=status,
+        )
+
+    def update(
+        self,
+        first_name: str,
+        last_name: str,
+        email: EmailStr,
+        phone: str,
+        birth_year: int,
+        status: Status,
+    ):
+        """Update the user model with updatable fields, all but key and version."""
+        return UserModel(
+            key=self.key,
+            version=self.version,
             first_name=first_name,
             last_name=last_name,
             email=email,

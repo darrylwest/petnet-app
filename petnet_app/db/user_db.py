@@ -1,6 +1,6 @@
 """User Db module and API."""
 
-from typing import List, Union
+from typing import Iterable, Union
 
 from petnet_app.models.user import UserModel
 
@@ -35,8 +35,15 @@ class UserDb:
         print(f"fetch user from key: {key}")
         return None
 
-    def keys(self) -> List:
-        """Return the full list of keys."""
+    def keys(self, shard: int) -> Iterable[UserModel]:
+        """Return the full list of keys for a given shard."""
+        print(f"return all keys for the shard: {shard}")
+        return []
+
+    def models(self, keys: Iterable[str]) -> Iterable[UserModel]:
+        """Fetch the list of models from the list of keys."""
+        print(f"fetch models from keys: {keys}")
+
         return []
 
     def remove(self, model: UserModel) -> Union[UserModel, None]:

@@ -28,9 +28,16 @@ def test_fetch_bad_key():
 
 
 def test_keys():
-    keys = db.keys()
+    shard = 0
+    keys = db.keys(shard)
 
     assert len(keys) == 0
+
+
+def test_models():
+    keys = []
+    models = db.models(keys)
+    assert len(keys) == len(models)
 
 
 def test_remove():

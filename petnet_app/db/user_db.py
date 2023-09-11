@@ -4,6 +4,8 @@ from typing import Iterable, Union
 
 from petnet_app.models.user import UserModel
 
+# implement the pickle calls here then refactor to DbProtocol
+
 
 class UserDb:
     """UserDb API."""

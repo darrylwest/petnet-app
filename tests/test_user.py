@@ -1,6 +1,5 @@
 """Tests for user, user model, userdb"""
 
-import pytest
 from rich import inspect
 import time
 

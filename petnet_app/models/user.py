@@ -4,16 +4,10 @@
 from pydantic import BaseModel, EmailStr
 from pydomkeys.keys import KeyGen
 
+from petnet_app.models.version import Version
+
 # the user keygen
 keygen = KeyGen.create("US", 4)
-
-
-class Version(BaseModel):
-    """Version to hold create, update and version number."""
-
-    create_date: int
-    last_update: int
-    version: int
 
 
 class UserModel(BaseModel):

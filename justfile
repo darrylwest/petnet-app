@@ -47,6 +47,9 @@ mypy:
 refurb:
     poetry run refurb petnet_app/ tests/
 
+watch:
+    watchexec -c -w petnet_app/ -w tests/ -e .py -d 500 'just test'
+    
 repl:
     poetry run bpython -i .repl-start.py
 

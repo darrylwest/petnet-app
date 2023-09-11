@@ -21,4 +21,8 @@ else:
 
 sys.path.append(libpath)
 
-from tests import test_main, test_user
+from tests import test_main, test_user, test_version
+
+from petnet_app.models.version import Version
+from petnet_app.models.user import UserModel
+

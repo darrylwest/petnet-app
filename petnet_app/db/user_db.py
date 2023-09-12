@@ -35,7 +35,9 @@ class UserDb:
     def fetch(self, key: str) -> Union[UserModel, None]:
         """Return the UserModel or None if not found."""
         print(f"fetch user from key: {key}")
-        return None
+        model = None
+
+        return model
 
     def keys(self, shard: int) -> Iterable[UserModel]:
         """Return the full list of keys for a given shard."""

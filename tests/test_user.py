@@ -44,6 +44,15 @@ def test_user():
     print(model.model_dump_json())
 
 
+def test_from_json():
+    ref = create_user_model()
+    jmodel = ref.model_dump_json()
+    model = UserModel.from_json(jmodel)
+
+    assert isinstance(model, UserModel)
+    assert ref == model
+
+
 def test_create():
     user = create_user_model()
     model = UserModel.create(

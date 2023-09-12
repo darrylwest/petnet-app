@@ -26,6 +26,11 @@ class UserModel(BaseModel, frozen=True):
     status: Status
 
     @classmethod
+    def from_json(cls, json_string: str) -> Self:
+        """Parse the json string and return a user model."""
+        return cls.model_validate_json(json_string)
+
+    @classmethod
     def create(
         cls,
         first_name: str,

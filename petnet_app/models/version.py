@@ -28,7 +28,8 @@ class Version(BaseModel):
             version=0,
         )
 
-    def update(self):
+    # TODO(dpw): how to properly document that a Version object is being returned
+    def update(self):  # -> Version:  or -> Self:
         """Update to the next version and return a copy."""
         now = Version.now()
         vers = self.version + 1

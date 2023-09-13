@@ -1,5 +1,6 @@
 """Test the UserDb."""
 
+from rich import inspect
 from tests.fake_data_store import FakeDataStore
 from petnet_app.db.user_db import UserDb, DataStore
 from petnet_app.models.user import UserModel
@@ -30,10 +31,19 @@ def test_save():
 
     assert model == updated
 
+def test_fetch():
+    model = fake.user_model()
+    db.save(model)
 
+    fetched = db.fetch(model.key)
+    assert fetched == model
+    
 def test_fetch_bad_key():
     key = "bad-key"
     model = db.fetch(key)
+
+    inspect(model)
+
     assert model is None
 
 

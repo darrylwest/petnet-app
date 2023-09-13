@@ -19,15 +19,23 @@ class DataStore:
         file = ctx.get("file", "user.json")
         path = Path(base) / Path(file)
         self.full_path = path.absolute().as_posix()
-        self.db = pickledb.load(self.full_path, True)
+        self.db = pickledb.load(self.full_path, False)
 
+    # TODO(dpw): implement the data store api
+
+    def get(self, key: str):
+        """get the model by key"""
+        if jstring := self.db.get(key):
+            return jstring
+        else:
+            return None 
 
 class UserDb:
     """UserDb API."""
 
-    def __init__(self, db: DataStore):
+    def __init__(self, data_store: DataStore):
         """Initialize UserDb with an active datastore."""
-        self.db = db
+        self.data_store = data_store
 
     def validate(self, model: UserModel) -> list:
         """Return any detected validation errors, or and empty list."""
@@ -49,14 +57,16 @@ class UserDb:
 
         """
         print(f"save user from model: {model}")
+        self.data_store.db.set(model.key, model.model_dump_json())
         return model
 
     def fetch(self, key: str) -> Union[UserModel, None]:
         """Return the UserModel or None if not found."""
         print(f"fetch user from key: {key}")
-        model = None
+        if jstring := self.data_store.get(key):
+            return UserModel.from_json(jstring)
 
-        return model
+        return None 
 
     def keys(self, shard: int) -> Iterable[UserModel]:
         """Return the full list of keys for a given shard."""

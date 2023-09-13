@@ -1,10 +1,20 @@
 """Test the UserDb."""
 
 from tests.fake_data_store import FakeDataStore
-from petnet_app.db.user_db import UserDb
+from petnet_app.db.user_db import UserDb, DataStore
+from petnet_app.models.user import UserModel
 
 fake = FakeDataStore()
-db = UserDb()
+
+
+ctx = {
+    "base": "data",
+    "file": "user-test.json",
+    "keygen": UserModel.get_keygen(),
+}
+
+store = DataStore(ctx)
+db = UserDb(store)
 
 
 def test_validate():

@@ -1,14 +1,33 @@
 """User Db module and API."""
 
+from pathlib import Path
 from typing import Iterable, Union
+
+import pickledb
 
 from petnet_app.models.user import UserModel
 
 # implement the pickle calls here then refactor to DbProtocol
 
 
+class DataStore:
+    """DataStore a wrapper around the real k/v store."""
+
+    def __init__(self, ctx: dict):
+        """Initialize and connect to the database."""
+        base = ctx.get("base", "data")
+        file = ctx.get("file", "user.json")
+        path = Path(base) / Path(file)
+        self.full_path = path.absolute().as_posix()
+        self.db = pickledb.load(self.full_path, True)
+
+
 class UserDb:
     """UserDb API."""
+
+    def __init__(self, db: DataStore):
+        """Initialize UserDb with an active datastore."""
+        self.db = db
 
     def validate(self, model: UserModel) -> list:
         """Return any detected validation errors, or and empty list."""

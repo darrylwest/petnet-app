@@ -74,3 +74,8 @@ class UserModel(BaseModel, frozen=True):
             birth_year=birth_year,
             status=status,
         )
+
+    @staticmethod
+    def get_keygen() -> KeyGen:
+        """Return the keygen for this user model."""
+        return keygen

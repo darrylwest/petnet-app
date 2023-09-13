@@ -25,4 +25,5 @@ from tests import test_main, test_user, test_version
 
 from petnet_app.models.version import Version
 from petnet_app.models.user import UserModel
+from petnet_app.db.user_db import UserDb, DataStore
 

@@ -9,6 +9,7 @@ from petnet_app.models.user import UserModel
 
 # implement the pickle calls here then refactor to DbProtocol
 
+# TODO(dpw): replace ctx dict with a named tuple for a read-only
 
 class DataStore:
     """DataStore a wrapper around the real k/v store."""
@@ -27,8 +28,8 @@ class DataStore:
         """Get the model by key."""
         if jstring := self.db.get(key):
             return jstring
-        else:
-            return None
+
+        return None
 
 
 class UserDb:

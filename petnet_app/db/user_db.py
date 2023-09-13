@@ -32,6 +32,14 @@ class DataStore:
 
         return None
 
+    def put(self, key: str, value: str):
+        """Put/Set the key/value."""
+        self.db.set(key, value)
+
+    def keys(self) -> list:
+        """Return a list of all keys."""
+        return self.db.getall()
+
 
 class UserDb:
     """UserDb API."""
@@ -60,7 +68,7 @@ class UserDb:
 
         """
         print(f"save user from model: {model}")
-        self.data_store.db.set(model.key, model.model_dump_json())
+        self.data_store.put(model.key, model.model_dump_json())
         return model
 
     def fetch(self, key: str) -> Union[UserModel, None]:
@@ -74,7 +82,7 @@ class UserDb:
     def keys(self, shard: int) -> Iterable[UserModel]:
         """Return the full list of keys for a given shard."""
         print(f"return all keys for the shard: {shard}")
-        return []
+        return self.data_store.keys()
 
     def models(self, keys: Iterable[str]) -> Iterable[UserModel]:
         """Fetch the list of models from the list of keys."""

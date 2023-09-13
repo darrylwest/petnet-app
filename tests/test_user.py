@@ -4,7 +4,7 @@ from rich import inspect
 import time
 
 from tests.fake_data_store import FakeDataStore
-from petnet_app.models.user import Version, UserModel, keygen
+from petnet_app.models.user import Version, Person, UserModel, keygen
 from petnet_app.models.status import Status
 
 
@@ -55,7 +55,7 @@ def test_from_json():
 
 def test_create():
     user = create_user_model()
-    model = UserModel.create(
+    person = Person(
         first_name=user.first_name,
         last_name=user.last_name,
         email=user.email,
@@ -63,6 +63,8 @@ def test_create():
         birth_year=user.birth_year,
         status=Status.active(128),
     )
+
+    model = UserModel.create(person)
     inspect(model)
     assert len(model.first_name) > 1
     assert len(model.last_name) > 1
@@ -82,7 +84,8 @@ def test_update():
 
     first_name, last_name, email = fake.person()
 
-    updated = model.update(
+    # create the update record
+    person = Person(
         first_name=first_name,
         last_name=last_name,
         email=email,
@@ -90,6 +93,8 @@ def test_update():
         birth_year=model.birth_year,
         status=Status.active(0),
     )
+
+    updated = model.update(person)
 
     assert updated.key == model.key
     assert updated.version == model.version

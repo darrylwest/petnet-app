@@ -1,7 +1,7 @@
 """User model."""
 
 
-from typing import Self
+from typing import NamedTuple, Self
 
 from pydantic import BaseModel, EmailStr
 from pydomkeys.keys import KeyGen
@@ -11,6 +11,17 @@ from petnet_app.models.version import Version
 
 # the user keygen
 keygen = KeyGen.create("US", 4)
+
+
+class Person(NamedTuple):
+    """Person tuple used to construct or update a UserModel."""
+
+    first_name: str
+    last_name: str
+    email: EmailStr
+    phone: str
+    birth_year: int
+    status: Status = Status.new(0)
 
 
 class UserModel(BaseModel, frozen=True):
@@ -31,48 +42,32 @@ class UserModel(BaseModel, frozen=True):
         return cls.model_validate_json(json_string)
 
     @classmethod
-    def create(
-        cls,
-        first_name: str,
-        last_name: str,
-        email: EmailStr,
-        phone: str,
-        birth_year: int,
-        status: Status,
-    ) -> Self:
+    def create(cls, person: Person) -> Self:
         """Create a new user model and assign new key, version and set status."""
         key = keygen.route_key()
         version = Version.create()
         return cls(
             key=key,
             version=version,
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            phone=phone,
-            birth_year=birth_year,
-            status=status,
+            first_name=person.first_name,
+            last_name=person.last_name,
+            email=person.email,
+            phone=person.phone,
+            birth_year=person.birth_year,
+            status=person.status,
         )
 
-    def update(
-        self,
-        first_name: str,
-        last_name: str,
-        email: EmailStr,
-        phone: str,
-        birth_year: int,
-        status: Status,
-    ):
+    def update(self, person: Person):
         """Update the user model with updatable fields, all but key and version."""
         return UserModel(
             key=self.key,
             version=self.version,
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            phone=phone,
-            birth_year=birth_year,
-            status=status,
+            first_name=person.first_name,
+            last_name=person.last_name,
+            email=person.email,
+            phone=person.phone,
+            birth_year=person.birth_year,
+            status=person.status,
         )
 
     @staticmethod

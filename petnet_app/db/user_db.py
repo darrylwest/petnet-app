@@ -24,11 +24,12 @@ class DataStore:
     # TODO(dpw): implement the data store api
 
     def get(self, key: str):
-        """get the model by key"""
+        """Get the model by key."""
         if jstring := self.db.get(key):
             return jstring
         else:
-            return None 
+            return None
+
 
 class UserDb:
     """UserDb API."""
@@ -66,7 +67,7 @@ class UserDb:
         if jstring := self.data_store.get(key):
             return UserModel.from_json(jstring)
 
-        return None 
+        return None
 
     def keys(self, shard: int) -> Iterable[UserModel]:
         """Return the full list of keys for a given shard."""

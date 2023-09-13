@@ -31,13 +31,15 @@ def test_save():
 
     assert model == updated
 
+
 def test_fetch():
     model = fake.user_model()
     db.save(model)
 
     fetched = db.fetch(model.key)
     assert fetched == model
-    
+
+
 def test_fetch_bad_key():
     key = "bad-key"
     model = db.fetch(key)

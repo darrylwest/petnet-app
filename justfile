@@ -64,5 +64,5 @@ repl:
 # precommit tasks including test, cover, format, ruff, refurb and mypy
 precommit:
     clear
-    just test cover format ruff refurb mypy
+    just test cover format lint refurb mypy
 

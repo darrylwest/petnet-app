@@ -11,6 +11,7 @@ from petnet_app.models.user import UserModel
 
 # TODO(dpw): replace ctx dict with a named tuple for a read-only
 
+
 class DataStore:
     """DataStore a wrapper around the real k/v store."""
 

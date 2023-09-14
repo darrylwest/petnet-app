@@ -1,25 +1,30 @@
 """User Db module and API."""
 
 from pathlib import Path
-from typing import Iterable, Union
+from typing import Iterable, NamedTuple, Union
 
 import pickledb
+from pydomkeys.keys import KeyGen
 
 from petnet_app.models.user import UserModel
 
 # implement the pickle calls here then refactor to DbProtocol
 
-# TODO(dpw): replace ctx dict with a named tuple for a read-only
+
+class DataStoreConfig(NamedTuple):
+    """DataStore config with redis unix socket or pickledb json file."""
+
+    base: str
+    file: str
+    keygen: KeyGen
 
 
 class DataStore:
     """DataStore a wrapper around the real k/v store."""
 
-    def __init__(self, ctx: dict):
+    def __init__(self, ctx: DataStoreConfig):
         """Initialize and connect to the database."""
-        base = ctx.get("base", "data")
-        file = ctx.get("file", "user.json")
-        path = Path(base) / Path(file)
+        path = Path(ctx.base) / Path(ctx.file)
         self.full_path = path.absolute().as_posix()
         self.db = pickledb.load(self.full_path, False)
 

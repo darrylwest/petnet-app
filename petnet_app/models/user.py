@@ -42,7 +42,9 @@ class UserModel(BaseModel, frozen=True):
     def validate_user(self) -> list:
         """Return a list of detected errors or an empty list."""
         errors = []
-        if birth_error := validator.birth_year(self.birth_year) is not None:
+        birth_error = validator.birth_year(self.birth_year)
+        if birth_error is not None:
+            print(birth_error)
             errors.append(birth_error)
 
         return errors

@@ -5,6 +5,7 @@ from tests.fake_data_store import FakeDataStore
 from petnet_app.db.user_db import UserDb, DataStore, DataStoreConfig
 from petnet_app.models.user import UserModel, Person
 from petnet_app.models.version import Version
+from petnet_app.models.model_validations import ModelVersionError, ModelValidationError
 
 from datetime import datetime, timezone
 
@@ -37,6 +38,18 @@ def test_save():
     # TODO(dpw): check version updated
 
 
+def test_save_with_old_version():
+    ref = fake.user_model()
+    model = db.save(ref)
+
+    try:
+        db.save(ref)
+        assert False, "should have raised version exception"
+    except ModelVersionError as err:
+        inspect(err)
+        assert True
+
+
 def test_save_bad_birth_year():
     user = fake.user_model()
     today = datetime.now(tz=timezone.utc)
@@ -53,7 +66,8 @@ def test_save_bad_birth_year():
     try:
         updated = db.save(model)
         assert False, "should have thrown an exception"
-    except Exception:
+    except ModelValidationError as err:
+        inspect(err)
         assert True
 
 

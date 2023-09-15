@@ -9,6 +9,14 @@ class BirthYearError(ValueError):
     """BirthYearError raised if birth year > current year."""
 
 
+class ModelVersionError(ValueError):
+    """ModelVersionError raised if an update is attempted on an out-of-date model version."""
+
+
+class ModelValidationError(ValueError):
+    """ModelValidationError raised if the model is not valid."""
+
+
 class ModelValidations:
     """Common data model validations shared between models."""
 

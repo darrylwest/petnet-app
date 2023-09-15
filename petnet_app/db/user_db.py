@@ -6,6 +6,8 @@ from typing import Iterable, NamedTuple, Union
 import pickledb
 from pydomkeys.keys import KeyGen
 
+from petnet_app.models.model_validations import (ModelValidationError,
+                                                 ModelVersionError)
 from petnet_app.models.user import UserModel
 from petnet_app.models.version import Version
 
@@ -68,11 +70,15 @@ class UserDb:
         Return the copy.
 
         """
-        print(f"save user from model: {model}")
         if errors := model.validate_user():
-            raise ValueError(f"errors: {len(errors)}")
+            print(f"save user error: {model}")
+            print(f"errors: {errors}")
+            raise ModelValidationError(f"{len(errors)} detected", errors)
 
-        # if not self.check_version(model):
+        if not self.check_version(model):
+            raise ModelVersionError(
+                f"version mismatch key: {model.key}, version: {model.version}",
+            )
 
         model = self.update_version(model)
         self.data_store.put(model.key, model.model_dump_json())

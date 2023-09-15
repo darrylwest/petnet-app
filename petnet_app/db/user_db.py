@@ -1,59 +1,11 @@
 """User Db module and API."""
 
-from pathlib import Path
-from typing import Iterable, NamedTuple, Union
+from typing import Iterable, List, Union
 
-import pickledb
-from pydomkeys.keys import KeyGen
-
+from petnet_app.db.data_store import DataStore
 from petnet_app.models.model_validations import (ModelValidationError,
                                                  ModelVersionError)
 from petnet_app.models.user import UserModel
-
-# implement the pickle calls here then refactor to DbProtocol
-
-
-class DataStoreConfig(NamedTuple):
-    """DataStore config with redis unix socket or pickledb json file."""
-
-    base: str
-    file: str
-    keygen: KeyGen
-
-
-class DataStore:
-    """DataStore a wrapper around the real k/v store."""
-
-    def __init__(self, ctx: DataStoreConfig):
-        """Initialize and connect to the database."""
-        path = Path(ctx.base) / Path(ctx.file)
-        self.full_path = path.absolute().as_posix()
-        self.db = pickledb.load(self.full_path, True)
-
-    # TODO(dpw): implement the data store api
-
-    def dbsize(self) -> int:
-        """Return the total number of rows in this data store."""
-        return self.db.totalkeys()
-
-    def get(self, key: str):
-        """Get the model by key."""
-        if jstring := self.db.get(key):
-            return jstring
-
-        return None
-
-    def put(self, key: str, value: str):
-        """Put/Set the key/value."""
-        self.db.set(key, value)
-
-    def keys(self) -> Iterable:
-        """Return an iterable over all keys."""
-        return self.db.getall()
-
-    def remove(self, key: str):
-        """Remove the value pointed to by the key. Return true if the key exists and was deleted."""
-        return self.db.rem(key)
 
 
 class UserDb:
@@ -97,15 +49,15 @@ class UserDb:
 
         return None
 
-    def keys(self, shard: int) -> Iterable[UserModel]:
+    def keys(self, shard: int) -> Iterable[str]:
         """Return an interable over keys for a given shard."""
         print(f"return all keys for the shard: {shard}")
         return self.data_store.keys()
 
-    def models(self, keys: Iterable[str]) -> Iterable[UserModel]:
+    def models(self, keys: Iterable[str]) -> List[UserModel | None]:
         """Fetch the list of models from the list of keys."""
         print(f"fetch models from keys: {keys}")
-        models = [self.data_store.get(key) for key in keys]
+        models = [self.fetch(key) for key in keys]
 
         return models
 

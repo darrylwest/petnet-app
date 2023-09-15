@@ -4,6 +4,7 @@ from rich import inspect
 from tests.fake_data_store import FakeDataStore
 from petnet_app.db.user_db import UserDb, DataStore, DataStoreConfig
 from petnet_app.models.user import UserModel, Person
+from petnet_app.models.version import Version
 
 from datetime import datetime, timezone
 
@@ -26,7 +27,12 @@ def test_save():
     updated = db.save(model)
 
     # TODO(dpw): this should fail
-    assert model == updated
+    assert model != updated
+    assert model.key == updated.key
+    assert model.version.create_date == updated.version.create_date
+    assert model.version.create_date <= updated.version.last_update
+    assert model.version.version + 1 == updated.version.version
+    assert model.status == updated.status
 
     # TODO(dpw): check version updated
 
@@ -53,7 +59,7 @@ def test_save_bad_birth_year():
 
 def test_fetch():
     model = fake.user_model()
-    db.save(model)
+    model = db.save(model)
 
     fetched = db.fetch(model.key)
     assert fetched == model
@@ -98,7 +104,25 @@ def test_remove():
     assert model.key == removed.key
 
 
+def test_check_version_on_insert():
+    model = fake.user_model()
+    assert db.check_version(model), "user should not exist in database"
+
+
 def test_check_version():
     model = fake.user_model()
-    ok = db.check_version(model)
-    assert ok
+    user = db.save(model)
+
+    ok = db.check_version(user)
+    assert ok, "should be in database with same version"
+
+
+def test_check_version_bad():
+    model = fake.user_model()
+    user = db.save(model)
+
+    vers = Version.update(model.version)
+    assert vers != user.version, f"versions should not match: {vers}  {model.version}"
+
+    ok = db.check_version(user)
+    assert ok, "should be in database with same version"

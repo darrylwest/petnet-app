@@ -7,6 +7,7 @@ import pickledb
 from pydomkeys.keys import KeyGen
 
 from petnet_app.models.user import UserModel
+from petnet_app.models.version import Version
 
 # implement the pickle calls here then refactor to DbProtocol
 
@@ -73,6 +74,7 @@ class UserDb:
 
         # if not self.check_version(model):
 
+        model = self.update_version(model)
         self.data_store.put(model.key, model.model_dump_json())
         return model
 
@@ -105,5 +107,23 @@ class UserDb:
     def check_version(self, model: UserModel) -> bool:
         """Return true if the version in the db matches the model's version."""
         print(f"check the version from model: {model}")
+        user = self.fetch(model.key)
+        if user is None:
+            return True
 
-        return True
+        return model.version == user.version
+
+    def update_version(self, model: UserModel) -> UserModel:
+        """Update the user model's version. Return a copy."""
+        vers = Version.update(model.version)
+
+        return UserModel(
+            key=model.key,
+            version=vers,
+            first_name=model.first_name,
+            last_name=model.last_name,
+            email=model.email,
+            phone=model.phone,
+            birth_year=model.birth_year,
+            status=model.status,
+        )

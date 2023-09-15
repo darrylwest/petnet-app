@@ -92,8 +92,9 @@ class UserDb:
     def models(self, keys: Iterable[str]) -> Iterable[UserModel]:
         """Fetch the list of models from the list of keys."""
         print(f"fetch models from keys: {keys}")
+        models = [self.data_store.get(key) for key in keys]
 
-        return []
+        return models
 
     def remove(self, model: UserModel) -> Union[UserModel, None]:
         """Remove the model if it exists.  Check the version first."""

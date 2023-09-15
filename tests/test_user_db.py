@@ -51,16 +51,27 @@ def test_fetch_bad_key():
 
 
 def test_keys():
+    count = 10
+    models = [fake.user_model() for _ in range(count)]
+    for model in models:
+        db.save(model)
+
     shard = 0
     keys = db.keys(shard)
 
-    assert len(keys) >= 0
+    assert len(keys) >= count
 
 
 def test_models():
-    keys = []
-    models = db.models(keys)
-    assert len(keys) == len(models)
+    count = 10
+    models = [fake.user_model() for _ in range(count)]
+    for model in models:
+        db.save(model)
+
+    keys = [model.key for model in models]
+    results = db.models(keys)
+    assert len(keys) == len(results)
+    assert len(models) == len(results)
 
 
 def test_remove():

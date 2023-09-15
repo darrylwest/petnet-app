@@ -6,11 +6,14 @@ from typing import NamedTuple, Self
 from pydantic import BaseModel, EmailStr
 from pydomkeys.keys import KeyGen
 
+from petnet_app.models.model_validations import ModelValidations
 from petnet_app.models.status import Status
 from petnet_app.models.version import Version
 
 # the user keygen
 keygen = KeyGen.create("US", 4)
+
+validator = ModelValidations()
 
 
 class Person(NamedTuple):
@@ -35,6 +38,14 @@ class UserModel(BaseModel, frozen=True):
     phone: str
     birth_year: int
     status: Status
+
+    def validate_user(self) -> list:
+        """Return a list of detected errors or an empty list."""
+        errors = []
+        if birth_error := validator.birth_year(self.birth_year) is not None:
+            errors.append(birth_error)
+
+        return errors
 
     @classmethod
     def from_json(cls, json_string: str) -> Self:

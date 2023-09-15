@@ -7,6 +7,7 @@ from tests.fake_data_store import FakeDataStore
 from petnet_app.models.user import Version, Person, UserModel, keygen
 from petnet_app.models.status import Status
 
+from datetime import datetime, timezone
 
 fake = FakeDataStore()
 
@@ -33,6 +34,31 @@ def create_user_model() -> UserModel:
     )
 
     return model
+
+
+def test_validate_user():
+    model = fake.user_model()
+    errors = model.validate_user()
+
+    assert len(errors) == 0
+
+
+def test_validate_birth_year():
+    user = fake.user_model()
+    today = datetime.now(tz=timezone.utc)
+    person = Person(
+        first_name=user.first_name,
+        last_name=user.last_name,
+        email=user.email,
+        phone=user.phone,
+        birth_year=today.year + 1,
+        status=Status.active(128),
+    )
+    model = user.update(person)
+
+    errors = model.validate_user()
+
+    assert len(errors) == 1
 
 
 def test_user():

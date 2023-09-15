@@ -3,7 +3,9 @@
 from rich import inspect
 from tests.fake_data_store import FakeDataStore
 from petnet_app.db.user_db import UserDb, DataStore, DataStoreConfig
-from petnet_app.models.user import UserModel
+from petnet_app.models.user import UserModel, Person
+
+from datetime import datetime, timezone
 
 fake = FakeDataStore()
 
@@ -19,18 +21,34 @@ store = DataStore(ctx)
 db = UserDb(store)
 
 
-def test_validate():
-    model = fake.user_model()
-    errors = db.validate(model)
-
-    assert len(errors) == 0
-
-
 def test_save():
     model = fake.user_model()
     updated = db.save(model)
 
+    # TODO(dpw): this should fail
     assert model == updated
+
+    # TODO(dpw): check version updated
+
+
+def test_save_bad_birth_year():
+    user = fake.user_model()
+    today = datetime.now(tz=timezone.utc)
+    person = Person(
+        first_name=user.first_name,
+        last_name=user.last_name,
+        email=user.email,
+        phone=user.phone,
+        birth_year=today.year + 1,
+        status=user.status,
+    )
+    model = user.update(person)
+
+    try:
+        updated = db.save(model)
+        assert False, "should have thrown an exception"
+    except Exception:
+        assert True
 
 
 def test_fetch():

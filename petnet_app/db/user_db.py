@@ -53,11 +53,6 @@ class UserDb:
         """Initialize UserDb with an active datastore."""
         self.data_store = data_store
 
-    def validate(self, model: UserModel) -> list:
-        """Return any detected validation errors, or and empty list."""
-        print(f"validate user model: {model}")
-        return []
-
     def save(self, model: UserModel) -> UserModel:
         """Save the UserModel to the database.
 
@@ -73,6 +68,11 @@ class UserDb:
 
         """
         print(f"save user from model: {model}")
+        if errors := model.validate_user():
+            raise ValueError(f"errors: {len(errors)}")
+
+        # if not self.check_version(model):
+
         self.data_store.put(model.key, model.model_dump_json())
         return model
 

@@ -6,8 +6,8 @@ from typing import Iterable, NamedTuple, Union
 import pickledb
 from pydomkeys.keys import KeyGen
 
-from petnet_app.models.model_validations import ModelValidationError
-from petnet_app.models.model_validations import ModelVersionError
+from petnet_app.models.model_validations import (ModelValidationError,
+                                                 ModelVersionError)
 from petnet_app.models.user import UserModel
 from petnet_app.models.version import Version
 

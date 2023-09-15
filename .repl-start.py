@@ -21,9 +21,12 @@ else:
 
 sys.path.append(libpath)
 
-from tests import test_main, test_user, test_version
+from tests import test_main, test_user, test_version, test_status, fake_data_store
 
 from petnet_app.models.version import Version
-from petnet_app.models.user import UserModel
-from petnet_app.db.user_db import UserDb, DataStore
+from petnet_app.models.status import Status
+from petnet_app.models.user import UserModel, Person
+from petnet_app.db.user_db import UserDb, DataStore, DataStoreConfig
+
+fake = fake_data_store.FakeDataStore()
 

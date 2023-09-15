@@ -21,15 +21,16 @@ def create_user_model() -> UserModel:
     )
 
     key = keygen.route_key()
-    first_name, last_name, email = fake.person()
+    person = fake.person()
+    inspect(f"person: {person}")
     model = UserModel(
         key=key,
         version=version,
-        first_name=first_name,
-        last_name=last_name,
-        email=email,
-        phone=fake.phone(),
-        birth_year=fake.birth_year(),
+        first_name=person.first_name,
+        last_name=person.last_name,
+        email=person.email,
+        phone=person.phone,
+        birth_year=person.birth_year,
         status=Status.new(128),
     )
 
@@ -108,25 +109,17 @@ def test_update():
 
     # TODO(dpw): test that an attempt to change a field will raise and exception
 
-    first_name, last_name, email = fake.person()
-
-    # create the update record
-    person = Person(
-        first_name=first_name,
-        last_name=last_name,
-        email=email,
-        phone=fake.phone(),
-        birth_year=model.birth_year,
-        status=Status.active(0),
-    )
+    person = fake.person()
+    person.birth_year = model.birth_year
+    person.status = Status.active(127)
 
     updated = model.update(person)
 
     assert updated.key == model.key
     assert updated.version == model.version
-    assert updated.first_name == first_name
-    assert updated.last_name == last_name
-    assert updated.email == email
+    assert updated.first_name == person.first_name
+    assert updated.last_name == person.last_name
+    assert updated.email == person.email
     assert updated.birth_year == model.birth_year
     assert updated.status.label == "active"
-    assert updated.status.value == 0
+    assert updated.status.value == 127

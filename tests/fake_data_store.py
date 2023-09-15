@@ -4,7 +4,9 @@ import time
 from datetime import datetime, timezone
 from faker import Faker
 
-from petnet_app.models.user import Version, UserModel, keygen, Status
+from petnet_app.models.user import Person, UserModel, keygen
+from petnet_app.models.version import Version
+from petnet_app.models.status import Status
 
 
 class FakeDataStore:
@@ -19,16 +21,22 @@ class FakeDataStore:
     def phone(self) -> str:
         return f"{self.fake.random_int(100,999)}-{self.fake.random_int(100,999)}-{self.fake.random_int(1000, 9999)}"
 
-    def person(self) -> tuple:
-        """return first, last and eamil"""
+    def person(self) -> Person:
+        """Return new Person object"""
         fname = self.fake.first_name()
         lname = self.fake.last_name()
         suffix = f"{self.fake.random_digit_above_two()}{self.fake.random_digit()}"
         email = f"{fname.lower()}.{lname.lower()}-{suffix}@{self.fake.domain_name()}"
+        return Person(
+            first_name=fname,
+            last_name=lname,
+            email=email,
+            phone=self.phone(),
+            birth_year=self.birth_year(),
+            status=Status.new(0),
+        )
 
-        return (fname, lname, email)
-
-    def user_model(self):
+    def user_model(self, person: Person = None) -> UserModel:
         now = time.time_ns()
         version = Version(
             create_date=now,
@@ -37,16 +45,18 @@ class FakeDataStore:
         )
 
         key = keygen.route_key()
-        first_name, last_name, email = self.person()
+        if person is None:
+            person = self.person()
+
         model = UserModel(
             key=key,
             version=version,
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            phone=self.phone(),
-            birth_year=self.birth_year(),
-            status=Status("new", 0),
+            first_name=person.first_name,
+            last_name=person.last_name,
+            email=person.email,
+            phone=person.phone,
+            birth_year=person.birth_year,
+            status=person.status,
         )
 
         return model

@@ -1,7 +1,8 @@
 """User model."""
 
 
-from typing import NamedTuple, Self
+from dataclasses import dataclass
+from typing import Self
 
 from pydantic import BaseModel, EmailStr
 from pydomkeys.keys import KeyGen
@@ -16,7 +17,8 @@ keygen = KeyGen.create("US", 4)
 validator = ModelValidations()
 
 
-class Person(NamedTuple):
+@dataclass
+class Person:
     """Person tuple used to construct or update a UserModel."""
 
     first_name: str
@@ -24,7 +26,7 @@ class Person(NamedTuple):
     email: EmailStr
     phone: str
     birth_year: int
-    status: Status = Status.new(0)
+    status: Status
 
 
 class UserModel(BaseModel, frozen=True):

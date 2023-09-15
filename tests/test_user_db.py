@@ -24,8 +24,11 @@ db = UserDb(store)
 
 
 def test_save():
+    """Save a new user model."""
     model = fake.user_model()
+    sz = db.dbsize()
     updated = db.save(model)
+    assert db.dbsize() == sz + 1
 
     # TODO(dpw): this should fail
     assert model != updated
@@ -42,12 +45,13 @@ def test_save_with_old_version():
     ref = fake.user_model()
     model = db.save(ref)
 
+    sz = db.dbsize()
     try:
         db.save(ref)
         assert False, "should have raised version exception"
     except ModelVersionError as err:
         inspect(err)
-        assert True
+        assert db.dbsize() == sz
 
 
 def test_save_bad_birth_year():
@@ -63,12 +67,13 @@ def test_save_bad_birth_year():
     )
     model = user.update(person)
 
+    sz = db.dbsize()
     try:
         updated = db.save(model)
         assert False, "should have thrown an exception"
     except ModelValidationError as err:
         inspect(err)
-        assert True
+        assert db.dbsize() == sz
 
 
 def test_fetch():
@@ -102,7 +107,7 @@ def test_keys():
 
 def test_models():
     count = 10
-    models = [fake.user_model() for _ in range(count)]
+    models = fake.user_models(count)
     for model in models:
         db.save(model)
 
@@ -112,10 +117,22 @@ def test_models():
     assert len(models) == len(results)
 
 
+def test_remove_not_found():
+    model = fake.user_model()
+    sz = db.dbsize()
+    removed = db.remove(model)
+    assert db.dbsize() == sz
+    assert removed.key == model.key
+
+
 def test_remove():
     model = fake.user_model()
+    model = db.save(model)
+    sz = db.dbsize()
     removed = db.remove(model)
     assert model.key == removed.key
+
+    assert db.dbsize() == sz - 1
 
 
 def test_check_version_on_insert():

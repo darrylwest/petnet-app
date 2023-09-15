@@ -9,7 +9,6 @@ from pydomkeys.keys import KeyGen
 from petnet_app.models.model_validations import (ModelValidationError,
                                                  ModelVersionError)
 from petnet_app.models.user import UserModel
-from petnet_app.models.version import Version
 
 # implement the pickle calls here then refactor to DbProtocol
 
@@ -29,9 +28,13 @@ class DataStore:
         """Initialize and connect to the database."""
         path = Path(ctx.base) / Path(ctx.file)
         self.full_path = path.absolute().as_posix()
-        self.db = pickledb.load(self.full_path, False)
+        self.db = pickledb.load(self.full_path, True)
 
     # TODO(dpw): implement the data store api
+
+    def dbsize(self) -> int:
+        """Return the total number of rows in this data store."""
+        return self.db.totalkeys()
 
     def get(self, key: str):
         """Get the model by key."""
@@ -44,9 +47,13 @@ class DataStore:
         """Put/Set the key/value."""
         self.db.set(key, value)
 
-    def keys(self) -> list:
-        """Return a list of all keys."""
+    def keys(self) -> Iterable:
+        """Return an iterable over all keys."""
         return self.db.getall()
+
+    def remove(self, key: str):
+        """Remove the value pointed to by the key. Return true if the key exists and was deleted."""
+        return self.db.rem(key)
 
 
 class UserDb:
@@ -71,14 +78,12 @@ class UserDb:
 
         """
         if errors := model.validate_user():
-            print(f"save user error: {model}")
-            print(f"errors: {errors}")
-            raise ModelValidationError(f"{len(errors)} detected", errors)
+            msg = f"{len(errors)} detected"
+            raise ModelValidationError(msg, errors)
 
         if not self.check_version(model):
-            raise ModelVersionError(
-                f"version mismatch key: {model.key}, version: {model.version}",
-            )
+            msg = f"version mismatch key: {model.key}, version: {model.version}"
+            raise ModelVersionError(msg)
 
         model = self.update_version(model)
         self.data_store.put(model.key, model.model_dump_json())
@@ -93,7 +98,7 @@ class UserDb:
         return None
 
     def keys(self, shard: int) -> Iterable[UserModel]:
-        """Return the full list of keys for a given shard."""
+        """Return an interable over keys for a given shard."""
         print(f"return all keys for the shard: {shard}")
         return self.data_store.keys()
 
@@ -106,9 +111,17 @@ class UserDb:
 
     def remove(self, model: UserModel) -> Union[UserModel, None]:
         """Remove the model if it exists.  Check the version first."""
-        print(f"remove user from model: {model}")
+        user = self.fetch(model.key)
+        if user is None:
+            return model
+
+        self.data_store.remove(model.key)
 
         return model
+
+    def dbsize(self) -> int:
+        """Return the total number of rows in this database."""
+        return self.data_store.dbsize()
 
     def check_version(self, model: UserModel) -> bool:
         """Return true if the version in the db matches the model's version."""
@@ -121,7 +134,7 @@ class UserDb:
 
     def update_version(self, model: UserModel) -> UserModel:
         """Update the user model's version. Return a copy."""
-        vers = Version.update(model.version)
+        vers = model.version.update()
 
         return UserModel(
             key=model.key,

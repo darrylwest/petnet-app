@@ -19,6 +19,7 @@ integration:
 
 # run the standard tests (default target)
 test:
+    rm -f data/*-test.json
     poetry run pytest --cov=petnet_app/ --cov-branch tests/
 
 # run the standard tests + clippy and fmt

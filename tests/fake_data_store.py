@@ -38,11 +38,7 @@ class FakeDataStore:
 
     def user_model(self, person: Person = None) -> UserModel:
         now = time.time_ns()
-        version = Version(
-            create_date=now,
-            last_update=now,
-            version=1,
-        )
+        version = Version.create()
 
         key = keygen.route_key()
         if person is None:
@@ -60,3 +56,7 @@ class FakeDataStore:
         )
 
         return model
+
+    def user_models(self, count: int = 10) -> list[UserModel]:
+        models = [self.user_model() for _ in range(count)]
+        return models

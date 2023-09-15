@@ -55,7 +55,7 @@ refurb:
 
 # watch src and test ; run tests on change
 watch:
-    watchexec -c -w petnet_app/ -w tests/ -e .py -d 500 'just test'
+    watchexec -c -w petnet_app/ -w tests/ -e .py -d 500 'just test lint'
     
 # launch bpython and start with .repl-start.py script
 repl:

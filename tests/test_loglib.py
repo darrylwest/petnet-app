@@ -11,5 +11,7 @@ def test_stream_logger():
     lib.init_stream_logger()
     log = logging.getLogger("test")
 
+    inspect(log)
+
     log.info("this is a test")
     assert lib.name == "test"

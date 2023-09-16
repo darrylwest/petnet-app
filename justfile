@@ -15,7 +15,7 @@ run:
 
 # run the integration tests
 integration:
-    poetry run ./tests/integration.py --verbose
+    poetry run ./tests/integration.py
 
 # run the standard tests (default target)
 test:

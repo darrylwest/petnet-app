@@ -32,8 +32,9 @@ def test_home():
     response = httpx.get(url)
 
     if response.status_code != 200:
-        inspect(response)
         print(f"text: {response.text}, status code: {response.status_code}")
+        if verbose:
+            inspect(response)
 
     assert response.status_code == 200
     if verbose:
@@ -46,8 +47,9 @@ def test_ping():
     response = httpx.get(url, headers=create_headers())
 
     if response.status_code != 200:
-        inspect(response)
         print(f"text: {response.text}, status code: {response.status_code}")
+        if verbose:
+            inspect(response)
 
     assert response.status_code == 200
     if verbose:
@@ -62,8 +64,9 @@ def test_info():
     response = httpx.get(url, headers=create_headers())
 
     if response.status_code != 200:
-        inspect(response)
         print(f"text: {response.text}, status code: {response.status_code}")
+        if verbose:
+            inspect(response)
 
     assert response.status_code == 200
     if verbose:

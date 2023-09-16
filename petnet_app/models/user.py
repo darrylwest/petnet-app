@@ -1,6 +1,7 @@
 """User model."""
 
 
+import logging
 from dataclasses import dataclass
 from typing import Self
 
@@ -15,6 +16,8 @@ from petnet_app.models.version import Version
 keygen = KeyGen.create("US", 4)
 
 validator = ModelValidations()
+
+log = logging.getLogger("mdl")
 
 
 @dataclass
@@ -46,7 +49,7 @@ class UserModel(BaseModel, frozen=True):
         errors = []
         birth_error = validator.birth_year(self.birth_year)
         if birth_error is not None:
-            print(birth_error)
+            log.warning(birth_error)
             errors.append(birth_error)
 
         return errors

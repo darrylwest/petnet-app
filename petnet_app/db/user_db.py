@@ -1,11 +1,15 @@
 """User Db module and API."""
 
+
+import logging
 from typing import Iterable, List, Union
 
 from petnet_app.db.data_store import DataStore
 from petnet_app.models.model_validations import (ModelValidationError,
                                                  ModelVersionError)
 from petnet_app.models.user import UserModel
+
+log = logging.getLogger("db")
 
 
 class UserDb:
@@ -31,10 +35,12 @@ class UserDb:
         """
         if errors := model.validate_user():
             msg = f"{len(errors)} detected"
+            log.warning(msg)
             raise ModelValidationError(msg, errors)
 
         if not self.check_version(model):
             msg = f"version mismatch key: {model.key}, version: {model.version}"
+            log.warning(msg)
             raise ModelVersionError(msg)
 
         model = self.update_version(model)
@@ -43,7 +49,7 @@ class UserDb:
 
     def fetch(self, key: str) -> Union[UserModel, None]:
         """Return the UserModel or None if not found."""
-        print(f"fetch user from key: {key}")
+        log.info(f"fetch user from key: {key}")
         if jstring := self.data_store.get(key):
             return UserModel.from_json(jstring)
 
@@ -51,12 +57,12 @@ class UserDb:
 
     def keys(self, shard: int) -> Iterable[str]:
         """Return an interable over keys for a given shard."""
-        print(f"return all keys for the shard: {shard}")
+        log.info(f"return all keys for the shard: {shard}")
         return self.data_store.keys()
 
     def models(self, keys: Iterable[str]) -> List[UserModel | None]:
         """Fetch the list of models from the list of keys."""
-        print(f"fetch models from keys: {keys}")
+        log.info(f"fetch models from keys: {keys}")
         models = [self.fetch(key) for key in keys]
 
         return models
@@ -77,7 +83,7 @@ class UserDb:
 
     def check_version(self, model: UserModel) -> bool:
         """Return true if the version in the db matches the model's version."""
-        print(f"check the version from model: {model}")
+        log.info(f"check the version from model: {model}")
         user = self.fetch(model.key)
         if user is None:
             return True

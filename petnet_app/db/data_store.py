@@ -22,8 +22,15 @@ class DataStore:
 
     def __init__(self, ctx: DataStoreConfig):
         """Initialize and connect to the database."""
-        path = Path(ctx.base) / Path(ctx.file)
+        base = Path(ctx.base)
+
+        if not base.exists():
+            Path.mkdir(base)
+
+        path = base / Path(ctx.file)
+
         self.full_path = path.absolute().as_posix()
+
         self.db = pickledb.load(self.full_path, True)
 
     # TODO(dpw): implement the data store api

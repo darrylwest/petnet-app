@@ -5,5 +5,5 @@ reflex.db
 .coverage
 perf8-report
 dist
-data
+data/*
 logs/*

@@ -22,7 +22,7 @@ class Config(NamedTuple):
         """Create the config for the give env."""
         env = os.getenv("PETNET_APP_ENV", env)
         now = datetime.now(tz=timezone.utc)
-        apikey = os.getenv("PETNET_APIKEY", "my-api-key")
+        apikey = os.getenv("PETNET_APIKEY", "3b448ff245a54f16848fc5f2f69a36d5")
 
         return cls(
             env=env,
@@ -32,7 +32,13 @@ class Config(NamedTuple):
             pid=os.getpid(),
         )
 
-    def uptime(self) -> timedelta:
-        """Return the time delta representing uptime."""
+    def uptime_delta(self) -> timedelta:
+        """Return the timedelta of seconds and microseconds since startup."""
         now = datetime.now(tz=timezone.utc)
         return now - self.created
+
+    def uptime(self) -> str:
+        """Return the days, hours, minutes and seconds representing uptime."""
+        delta = self.uptime_delta()
+        days = delta.days
+        return f"{days} days, {timedelta(seconds=delta.seconds)}"

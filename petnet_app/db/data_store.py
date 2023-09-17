@@ -1,10 +1,13 @@
 """DataStore implementing the pickle database."""
 
+import logging
 from pathlib import Path
 from typing import Iterable, NamedTuple, Union
 
 import pickledb
 from pydomkeys.keys import KeyGen
+
+log = logging.getLogger("db")
 
 # implement the pickle calls here then refactor to DbProtocol
 
@@ -43,6 +46,8 @@ class DataStore:
         """Get the model by key."""
         if jstring := self.db.get(key):
             return jstring
+
+        log.warning(f"record not found for key {key}")
 
         return None
 

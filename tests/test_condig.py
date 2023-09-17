@@ -3,6 +3,7 @@
 from rich import inspect
 import os
 from datetime import datetime, timezone
+import time
 
 from petnet_app.config import Config
 
@@ -23,5 +24,14 @@ def test_uptime():
 
     assert cfg.created >= now
     uptime = cfg.uptime()
-    assert uptime.seconds >= 0
-    assert uptime.microseconds >= 0
+    inspect(uptime)
+    assert str.startswith(uptime, "0 days")
+    assert str.endswith(uptime, "0:00:00")
+
+
+def test_uptime_days():
+    dt = datetime.fromtimestamp(time.time() - 864000, tz=timezone.utc)
+    cfg = Config("prod", dt, "0.0.0", "apikey", os.getpid())
+    uptime = cfg.uptime()
+    inspect(uptime)
+    assert str.startswith(uptime, "10 days,")

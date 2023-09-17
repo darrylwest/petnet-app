@@ -2,7 +2,7 @@
 
 from rich import inspect
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 from petnet_app.config import Config
 

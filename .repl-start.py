@@ -28,6 +28,7 @@ from petnet_app.models.status import Status
 from petnet_app.models.user import UserModel, Person
 from petnet_app.db.user_db import UserDb
 from petnet_app.db.data_store import DataStore, DataStoreConfig
+from petnet_app.config import Config
 
 fake = fake_data_store.FakeDataStore()
 

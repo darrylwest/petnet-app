@@ -30,7 +30,8 @@ def test_uptime():
 
 
 def test_uptime_days():
-    dt = datetime.fromtimestamp(time.time() - 864000, tz=timezone.utc)
+    days = 60 * 60 * 24 * 10
+    dt = datetime.fromtimestamp(time.time() - days, tz=timezone.utc)
     cfg = Config("prod", dt, "0.0.0", "apikey", os.getpid())
     uptime = cfg.uptime()
     inspect(uptime)

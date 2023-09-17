@@ -38,7 +38,8 @@ class UserDb:
             log.warning(msg)
             raise ModelValidationError(msg, errors)
 
-        if not self.check_version(model):
+        exists = self.data_store.exists(model.key)
+        if exists and not self.check_version(model):
             msg = f"version mismatch key: {model.key}, version: {model.version}"
             log.warning(msg)
             raise ModelVersionError(msg)
@@ -84,6 +85,7 @@ class UserDb:
     def check_version(self, model: UserModel) -> bool:
         """Return true if the version in the db matches the model's version."""
         log.info(f"check the version from model: {model}")
+
         user = self.fetch(model.key)
         if user is None:
             return True

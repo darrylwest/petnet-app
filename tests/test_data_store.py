@@ -19,6 +19,10 @@ ctx = DataStoreConfig(
 store = DataStore(ctx)
 
 
+def test_exists():
+    assert not store.exists("bad-bad-key"), "should not exist"
+
+
 def test_dbsize():
     sz = store.dbsize()
     assert sz >= 0

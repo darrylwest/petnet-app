@@ -42,6 +42,10 @@ class DataStore:
         """Return the total number of rows in this data store."""
         return self.db.totalkeys()
 
+    def exists(self, key: str) -> bool:
+        """Return true if this key is in the database, else false."""
+        return self.db.exists(key)
+
     def get(self, key: str) -> Union[str, None]:
         """Get the model by key."""
         if jstring := self.db.get(key):

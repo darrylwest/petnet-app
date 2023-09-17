@@ -86,7 +86,7 @@ def test_fetch():
 
 
 def test_fetch_bad_key():
-    key = "bad-key"
+    key = ctx.keygen.route_key()
     model = db.fetch(key)
 
     inspect(model)
@@ -100,8 +100,9 @@ def test_keys():
     for model in models:
         db.save(model)
 
-    shard = 0
-    keys = db.keys(shard)
+    keys = []
+    for shard in range(db.data_store.shard_count):
+        keys += db.keys(shard)
 
     assert len(keys) >= count
 

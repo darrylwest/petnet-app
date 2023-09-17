@@ -21,7 +21,7 @@ else:
 
 sys.path.append(libpath)
 
-from tests import test_main, test_user, test_version, test_status, fake_data_store
+from tests import test_main, test_user, test_version, test_status, test_data_store, test_user_db, fake_data_store
 
 from petnet_app.models.version import Version
 from petnet_app.models.status import Status

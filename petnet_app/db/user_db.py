@@ -59,7 +59,7 @@ class UserDb:
     def keys(self, shard: int) -> Iterable[str]:
         """Return an interable over keys for a given shard."""
         log.info(f"return all keys for the shard: {shard}")
-        return self.data_store.keys()
+        return self.data_store.keys(shard)
 
     def models(self, keys: Iterable[str]) -> List[UserModel | None]:
         """Fetch the list of models from the list of keys."""

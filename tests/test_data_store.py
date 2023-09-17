@@ -20,7 +20,8 @@ store = DataStore(ctx)
 
 
 def test_exists():
-    assert not store.exists("bad-bad-key"), "should not exist"
+    key = ctx.keygen.route_key()
+    assert not store.exists(key), "should not exist"
 
 
 def test_dbsize():

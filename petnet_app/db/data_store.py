@@ -32,23 +32,29 @@ class DataStore:
 
         path = base / Path(ctx.file)
 
-        self.full_path = path.absolute().as_posix()
+        self.keygen = ctx.keygen
+        self.shard_count = self.keygen.domain_router.shard_count
 
-        self.db = pickledb.load(self.full_path, True)
-
-    # TODO(dpw): implement the data store api
+        self.dbs = []
+        for shard in range(self.shard_count):
+            full_path = path.absolute().as_posix().replace(".json", f"{shard}.json")
+            self.dbs.append(pickledb.load(full_path, True))
 
     def dbsize(self) -> int:
-        """Return the total number of rows in this data store."""
-        return self.db.totalkeys()
+        """Return the total number of rows in this data store, summing up all the shards."""
+        return sum(db.totalkeys() for db in self.dbs)
 
     def exists(self, key: str) -> bool:
         """Return true if this key is in the database, else false."""
-        return self.db.exists(key)
+        shard = self.keygen.parse_route(key)
+        db = self.dbs[shard]
+        return db.exists(key)
 
     def get(self, key: str) -> Union[str, None]:
         """Get the model by key."""
-        if jstring := self.db.get(key):
+        shard = self.keygen.parse_route(key)
+        db = self.dbs[shard]
+        if jstring := db.get(key):
             return jstring
 
         log.warning(f"record not found for key {key}")
@@ -57,12 +63,17 @@ class DataStore:
 
     def put(self, key: str, value: str) -> bool:
         """Put/Set the key/value."""
-        return self.db.set(key, value)
+        shard = self.keygen.parse_route(key)
+        db = self.dbs[shard]
+        return db.set(key, value)
 
-    def keys(self) -> Iterable:
+    def keys(self, shard: int) -> Iterable:
         """Return an iterable over all keys."""
-        return self.db.getall()
+        db = self.dbs[shard]
+        return db.getall()
 
     def remove(self, key: str):
         """Remove the value pointed to by the key. Return true if the key exists and was deleted."""
-        return self.db.rem(key)
+        shard = self.keygen.parse_route(key)
+        db = self.dbs[shard]
+        return db.rem(key)

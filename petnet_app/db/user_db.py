@@ -111,7 +111,7 @@ class UserDb:
             birth_year=model.birth_year,
             status=model.status,
         )
-    
+
     def update_index(self, model):
         """Update all indexes for this model."""
         self.data_store.update_index(model.email, model.key)

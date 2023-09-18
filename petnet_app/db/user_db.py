@@ -46,13 +46,17 @@ class UserDb:
 
         model = self.update_version(model)
         self.data_store.put(model.key, model.model_dump_json())
+        self.update_index(model)
+
         return model
 
     def fetch(self, key: str) -> Union[UserModel, None]:
         """Return the UserModel or None if not found."""
         log.info(f"fetch user from key: {key}")
         if jstring := self.data_store.get(key):
-            return UserModel.from_json(jstring)
+            user = UserModel.from_json(jstring)
+            self.update_index(user)
+            return user
 
         return None
 
@@ -74,7 +78,8 @@ class UserDb:
         if user is None:
             return model
 
-        self.data_store.remove(model.key)
+        # remove the model and item from the index
+        self.data_store.remove(model.key, model.email)
 
         return model
 
@@ -106,3 +111,7 @@ class UserDb:
             birth_year=model.birth_year,
             status=model.status,
         )
+    
+    def update_index(self, model):
+        """Update all indexes for this model."""
+        self.data_store.update_index(model.email, model.key)

@@ -33,7 +33,7 @@ from petnet_app.config import Config
 fake = fake_data_store.FakeDataStore()
 
 def create_user_db() -> UserDb:
-    ctx = DataStoreConfig(base="data", file="user.json", keygen=UserModel.get_keygen())
+    ctx = DataStoreConfig(base="db", file="user.json", keygen=UserModel.get_keygen())
     store = DataStore(ctx)
     return UserDb(store)
 

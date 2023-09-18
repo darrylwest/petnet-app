@@ -35,6 +35,9 @@ class DataStore:
         self.keygen = ctx.keygen
         self.shard_count = self.keygen.domain_router.shard_count
 
+        full_path = path.absolute().as_posix().replace(".json", "-idx.json")
+        self.index = pickledb.load(full_path, True)
+
         self.dbs = []
         for shard in range(self.shard_count):
             full_path = path.absolute().as_posix().replace(".json", f"{shard}.json")
@@ -73,8 +76,14 @@ class DataStore:
 
         return (key for key in db.getall().mapping.keys())
 
-    def remove(self, key: str):
+    def remove(self, key: str, index_key: str):
         """Remove the value pointed to by the key. Return true if the key exists and was deleted."""
         shard = self.keygen.parse_route(key)
         db = self.dbs[shard]
+        self.index.rem(index_key)
+
         return db.rem(key)
+
+    def update_index(self, key, value):
+        """Update the index."""
+        self.index.set(key, value)

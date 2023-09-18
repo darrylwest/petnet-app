@@ -2,7 +2,7 @@
 
 
 import logging
-from typing import Iterable, List, Union
+from typing import Iterable, Union
 
 from petnet_app.db.data_store import DataStore
 from petnet_app.models.model_validations import (ModelValidationError,
@@ -56,15 +56,15 @@ class UserDb:
 
         return None
 
-    def keys(self, shard: int) -> Iterable[str]:
-        """Return an interable over keys for a given shard."""
-        log.info(f"return all keys for the shard: {shard}")
-        return self.data_store.keys(shard)
+    def keys_iter(self, shard: int) -> Iterable[str]:
+        """Return a generator over keys for a given shard."""
+        log.info(f"return a generator over all keys for the shard: {shard}")
+        return self.data_store.keys_iter(shard)
 
-    def models(self, keys: Iterable[str]) -> List[UserModel | None]:
-        """Fetch the list of models from the list of keys."""
+    def models(self, keys: Iterable[str]) -> Iterable[UserModel | None]:
+        """Return a generator over the list of models from the list of keys."""
         log.info(f"fetch models from keys: {keys}")
-        models = [self.fetch(key) for key in keys]
+        models = (self.fetch(key) for key in keys)
 
         return models
 

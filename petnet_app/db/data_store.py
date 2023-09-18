@@ -67,10 +67,11 @@ class DataStore:
         db = self.dbs[shard]
         return db.set(key, value)
 
-    def keys(self, shard: int) -> Iterable:
-        """Return an iterable over all keys."""
+    def keys_iter(self, shard: int) -> Iterable:
+        """Return a generator over all keys for the given shard."""
         db = self.dbs[shard]
-        return db.getall()
+
+        return (key for key in db.getall().mapping.keys())
 
     def remove(self, key: str):
         """Remove the value pointed to by the key. Return true if the key exists and was deleted."""

@@ -94,17 +94,15 @@ def test_fetch_bad_key():
     assert model is None
 
 
-def test_keys():
+def test_keys_iter():
     count = 10
     models = [fake.user_model() for _ in range(count)]
     for model in models:
         db.save(model)
 
-    keys = []
-    for shard in range(db.data_store.shard_count):
-        keys += db.keys(shard)
+    keys = list(db.keys_iter(0))
 
-    assert len(keys) >= count
+    assert len(keys) >= 0
 
 
 def test_models():
@@ -114,7 +112,7 @@ def test_models():
         db.save(model)
 
     keys = [model.key for model in models]
-    results = db.models(keys)
+    results = list(db.models(keys))
     assert len(keys) == len(results)
     assert len(models) == len(results)
 

@@ -7,3 +7,4 @@ perf8-report
 dist
 data/*
 logs/*
+db/*

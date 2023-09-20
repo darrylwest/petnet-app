@@ -60,6 +60,14 @@ class UserDb:
 
         return None
 
+    def find_by_email(self, email: str) -> UserModel | None:
+        """Find the user model where there is an exact email match."""
+        id = self.data_store.index.get(email)
+        if id is None:
+            return None
+        
+        return self.fetch(id)
+        
     def keys_iter(self, shard: int) -> Iterable[str]:
         """Return a generator over keys for a given shard."""
         log.info(f"return a generator over all keys for the shard: {shard}")

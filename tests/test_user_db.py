@@ -94,6 +94,21 @@ def test_fetch_bad_key():
     assert model is None
 
 
+def test_find_by_email():
+    model = fake.user_model()
+    model = db.save(model)
+
+    found = db.find_by_email(model.email)
+    assert found == model
+
+
+def test_not_find_by_email():
+    model = fake.user_model()
+
+    found = db.find_by_email(model.email)
+    assert found is None
+
+
 def test_keys_iter():
     count = 10
     models = [fake.user_model() for _ in range(count)]

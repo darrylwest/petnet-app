@@ -23,3 +23,15 @@ def test_birth_year_error():
 
     error = validator.birth_year(year)
     assert isinstance(error, BirthYearError)
+
+
+def test_key():
+    validator = ModelValidations()
+    key = "vjnC7lOpQnaGnTsE"
+    assert validator.is_valid_key(key)
+
+
+def test_bad_key():
+    validator = ModelValidations()
+    key = True
+    assert not validator.is_valid_key(key)

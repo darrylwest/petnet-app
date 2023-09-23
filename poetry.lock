@@ -940,7 +940,7 @@ python-dotenv = ">=0.21.0"
 
 [[package]]
 name = "pydomkeys"
-version = "0.3.6"
+version = "0.3.7"
 description = "A python library for domain-entity key generation identifiers e.g., user, provider, inventory item, etc."
 optional = false
 python-versions = "^3.11"
@@ -951,7 +951,7 @@ develop = false
 type = "git"
 url = "https://github.com/darrylwest/pydomkeys"
 reference = "HEAD"
-resolved_reference = "9f448741afae4ceda26f3158cf8f0827b5ba7238"
+resolved_reference = "40f37a57878b1ec494ebb3819807e9fff3c0a186"
 
 [[package]]
 name = "pygments"

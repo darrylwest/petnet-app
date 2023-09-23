@@ -89,6 +89,11 @@ class UserModel(BaseModel, frozen=True):
         )
 
     @staticmethod
+    def is_valid_key(key: str) -> bool:
+        """Return true if this is a velid user domain route key."""
+        return keygen.is_valid_route_key(key)  # type: ignore[attr-defined]
+
+    @staticmethod
     def get_keygen() -> KeyGen:
         """Return the keygen for this user model."""
         return keygen

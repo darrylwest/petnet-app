@@ -3,8 +3,6 @@
 from datetime import datetime, timezone
 from typing import Union
 
-VALID_KEY_LENGTH = 16
-
 
 # pylint: disable=too-few-public-methods
 class BirthYearError(ValueError):
@@ -30,10 +28,3 @@ class ModelValidations:
             return BirthYearError(f"Birth year must be in the past, got {year}")
 
         return None
-
-    def is_valid_key(self, key) -> bool:
-        """Verify the key type and length.  Return True if valid."""
-        if isinstance(key, str) and len(key) == VALID_KEY_LENGTH:
-            return True
-
-        return False

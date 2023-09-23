@@ -6,13 +6,10 @@ from typing import Iterable, Union
 
 from petnet_app.db.data_store import DataStore
 from petnet_app.models.model_validations import (ModelValidationError,
-                                                 ModelValidations,
                                                  ModelVersionError)
 from petnet_app.models.user import UserModel
 
 log = logging.getLogger("db")
-
-validator = ModelValidations()
 
 
 class UserDb:
@@ -66,7 +63,7 @@ class UserDb:
     def find_by_email(self, email: str) -> UserModel | None:
         """Find the user model where there is an exact email match."""
         key = self.data_store.index.get(email)
-        if validator.is_valid_key(key):
+        if UserModel.is_valid_key(key):
             return self.fetch(key)
 
         return None

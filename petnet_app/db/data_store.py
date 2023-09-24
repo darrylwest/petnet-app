@@ -2,72 +2,105 @@
 
 import logging
 from pathlib import Path
-from typing import Iterable, NamedTuple, Union
+from typing import Iterable, Union, Self
+from dataclasses import dataclass
+import os
 
-import pickledb
+import redis
+from redis.client import Redis
+# from redis.exceptions import DbConnectError
+
 from pydomkeys.keys import KeyGen
 
 log = logging.getLogger("db")
 
-# implement the pickle calls here then refactor to DbProtocol
 
 
-class DataStoreConfig(NamedTuple):
+@dataclass
+class DataStoreConfig():
     """DataStore config with redis unix socket or pickledb json file."""
 
-    base: str
-    file: str
+    env: str
+    name: str
+    host: str
+    port: int
+    auth: str
     keygen: KeyGen
+
+    @classmethod
+    def create(cls, keygen: KeyGen) -> Self:
+        """Create the db config instance."""
+        env = os.getenv("PETNET_ENV", "dev")
+        auth = os.getenv("PETNET_DBAUTH")
+        port = int(os.getenv("PETNET_DBPORT"))
+
+        cfg = cls(
+            env=env,
+            name="petnet-db",
+            host="localhost",
+            port=port,
+            keygen=keygen,
+            auth=auth,
+        )
+
+        # TODO(dpw): validate this first...
+        
+        return cfg
 
 
 class DataStore:
     """DataStore a wrapper around the real k/v store."""
 
-    def __init__(self, ctx: DataStoreConfig):
+    def __init__(self, cfg: DataStoreConfig):
         """Initialize and connect to the database."""
-        base = Path(ctx.base)
+        self.cfg = cfg
 
-        if not base.exists():
-            Path.mkdir(base)
-
-        path = base / Path(ctx.file)
-
-        self.keygen = ctx.keygen
+        self.keygen = cfg.keygen
         self.shard_count = self.keygen.domain_router.shard_count
 
-        full_path = path.absolute().as_posix().replace(".json", "-idx.json")
-        self.index = pickledb.load(full_path, True)
+        self.conn = [None for _ in range(self.shard_count)]
 
-        self.dbs = []
-        for shard in range(self.shard_count):
-            full_path = path.absolute().as_posix().replace(".json", f"{shard}.json")
-            self.dbs.append(pickledb.load(full_path, True))
+
+    def connect(self, shard: int) -> Redis:
+        """Connect to redis using shard."""
+        cfg = self.cfg
+        port = cfg.port + shard
+        name = f"{cfg.name}-{shard}"
+
+        db = redis.Redis(
+            host=cfg.host,
+            port=port,
+            password=cfg.auth,
+            client_name=name,
+            health_check_interval=30,
+        )
+
+        self.conn[shard] = db
+
+        return db
+
+    def get_connection(self, shard: int = 0):
+        """Return the redis connection for the specified shard."""
+        return self.conn[shard] if self.conn[shard] is not None else self.connect(shard)
 
     def dbsize(self) -> int:
         """Return the total number of rows in this data store, summing up all the shards."""
-        return sum(db.totalkeys() for db in self.dbs)
+        return 0
 
     def exists(self, key: str) -> bool:
         """Return true if this key is in the database, else false."""
-        shard = self.keygen.parse_route(key)
-        db = self.dbs[shard]
-        return db.exists(key)
+        # shard = self.keygen.parse_route(key)
+        return false
 
     def get(self, key: str) -> Union[str, None]:
         """Get the model by key."""
-        shard = self.keygen.parse_route(key)
-        db = self.dbs[shard]
-        if jstring := db.get(key):
-            return jstring
-
-        log.warning(f"record not found for key {key}")
-
+        # shard = self.keygen.parse_route(key)
         return None
+
 
     def put(self, key: str, value: str) -> bool:
         """Put/Set the key/value."""
-        shard = self.keygen.parse_route(key)
-        db = self.dbs[shard]
+        # shard = self.keygen.parse_route(key)
         return db.set(key, value)
 
     def keys_iter(self, shard: int) -> Iterable:

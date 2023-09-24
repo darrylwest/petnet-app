@@ -11,8 +11,7 @@ packages = [{include = "petnet_app"}]
 python = "^3.11"
 rich = "^13.5.2"
 fastapi = {extras = ["all"], version = "^0.103.1"}
-# redis = {extras = ["hiredis"], version = "^5.0.0"}
-pickledb = "^0.9.2"
+redis = {extras = ["hiredis"], version = "^5.0.0"}
 uvicorn = "^0.23.2"
 pydomkeys = {git = "https://github.com/darrylwest/pydomkeys"}
 

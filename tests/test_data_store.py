@@ -9,18 +9,13 @@ fake = FakeDataStore()
 
 keygen = KeyGen.create("ST", 1)
 
-ctx = DataStoreConfig(
-    base="data",
-    file="store-test.json",
-    keygen=keygen,
-)
+cfg = DataStoreConfig.create(keygen)
 
-
-store = DataStore(ctx)
+store = DataStore(cfg)
 
 
 def test_exists():
-    key = ctx.keygen.route_key()
+    key = cfg.keygen.route_key()
     assert not store.exists(key), "should not exist"
 
 

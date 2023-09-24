@@ -21,7 +21,8 @@ else:
 
 sys.path.append(libpath)
 
-from tests import test_main, test_user, test_version, test_status, test_data_store, test_user_db, fake_data_store
+# from tests import test_main, test_user, test_version, test_status, test_data_store, test_user_db, fake_data_store
+from tests import test_main, test_user, test_version, test_status, fake_data_store
 
 from petnet_app.models.version import Version
 from petnet_app.models.status import Status
@@ -32,8 +33,9 @@ from petnet_app.config import Config
 
 fake = fake_data_store.FakeDataStore()
 
-def create_user_db() -> UserDb:
-    ctx = DataStoreConfig(base="db", file="user.json", keygen=UserModel.get_keygen())
-    store = DataStore(ctx)
-    return UserDb(store)
+def create_user_db():
+    keygen = UserModel.get_keygen()
+    cfg = DataStoreConfig.create(keygen)
+    data_store = DataStore(cfg)
+    return data_store
 

@@ -46,9 +46,15 @@ class UserDb:
             raise ModelVersionError(msg)
 
         model = self.update_version(model)
-        ds.put(model.key, model.model_dump_json())
+        pipe = ds.pipeline()
+        pipe.set(model.key, model.model_dump_json())
+        pipe.set(self.email_index_key(model.email), model.key)
+        pipe.set(self.phone_index_key(model.phone), model.key)
+        results = pipe.execute()
 
-        # TODO(dpw)now save the indexes somehow.
+        log.info(f"save: {results}")
+        if not all(results):
+            log.error(f"Error saving: {model}, {results}")
 
         return model
 
@@ -71,11 +77,7 @@ class UserDb:
         klist = list(keys)
         log.info(f"fetch models from keys: {keys}")
 
-        models = [
-            UserModel.from_json(jstr)
-            for jstr in self.data_store.mget(klist, shard)
-            if jstr is not None
-        ]
+        models = [UserModel.from_json(jstr) for jstr in self.data_store.mget(klist, shard) if jstr is not None]
 
         return models
 
@@ -87,6 +89,7 @@ class UserDb:
 
         # TODO(dpw) fix to use pipeline and remove indexes as well
         # remove the model and item from the index
+        # self.data_store.remove(model.key, model.email)
 
         return model
 
@@ -114,3 +117,12 @@ class UserDb:
             birth_year=model.birth_year,
             status=model.status,
         )
+
+
+    def email_index_key(self, email: str) -> str:
+        """Return the key used for this index."""
+        return f"eidx{email}"
+
+    def phone_index_key(self, phone: str) -> str:
+        """Return the key used for this index."""
+        return f"eidx{phone}"

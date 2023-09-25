@@ -56,7 +56,7 @@ class UserDb:
             log.error(f"Error saving: {model}, {results}")
 
         pipe.reset()
-        
+
         return model
 
     def fetch(self, key: str) -> Union[UserModel, None]:
@@ -78,7 +78,11 @@ class UserDb:
         klist = list(keys)
         log.info(f"fetch models from keys: {keys}")
 
-        models = [UserModel.from_json(jstr) for jstr in self.data_store.mget(klist, shard) if jstr is not None]
+        models = [
+            UserModel.from_json(jstr)
+            for jstr in self.data_store.mget(klist, shard)
+            if jstr is not None
+        ]
 
         return models
 
@@ -88,9 +92,8 @@ class UserDb:
         if user is None:
             return model
 
-        # TODO(dpw) fix to use pipeline and remove indexes as well
+        # TODO(dpw): fix to use pipeline and remove indexes as well
         # remove the model and item from the index
-        # self.data_store.remove(model.key, model.email)
 
         return model
 
@@ -118,7 +121,6 @@ class UserDb:
             birth_year=model.birth_year,
             status=model.status,
         )
-
 
     def email_index_key(self, email: str) -> str:
         """Return the key used for this index."""

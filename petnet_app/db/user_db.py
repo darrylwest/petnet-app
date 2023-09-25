@@ -12,8 +12,12 @@ from petnet_app.models.user import UserModel
 log = logging.getLogger("db")
 
 
+
 class UserDb:
     """UserDb API."""
+
+    EMAIL_INDEX_KEY: str = "user_email_idx"
+    PHONE_INDEX_KEY: str = "phone_email_idx"
 
     def __init__(self, data_store: DataStore):
         """Initialize UserDb with an active datastore."""
@@ -48,8 +52,9 @@ class UserDb:
         model = self.update_version(model)
         pipe = ds.pipeline()
         pipe.set(model.key, model.model_dump_json())
-        pipe.set(self.email_index_key(model.email), model.key)
-        pipe.set(self.phone_index_key(model.phone), model.key)
+        pipe.sadd(UserDb.EMAIL_INDEX_KEY, self.email_index(model.email,  model.key))
+        pipe.sadd(UserDb.PHONE_INDEX_KEY, self.phone_index(model.phone, model.key))
+
         results = pipe.execute()
 
         if not all(results):
@@ -73,11 +78,13 @@ class UserDb:
         log.info(f"return a generator over all keys for the shard: {shard}")
         return self.data_store.keys_iter("US*", shard)
 
-    def models(self, keys: Iterable[str], shard: int = 0) -> Iterable[UserModel | None]:
+    def models(self, keys: Iterable[str]) -> Iterable[UserModel | None]:
         """Return a generator over the list of models from the list of keys."""
         klist = list(keys)
         log.info(f"fetch models from keys: {keys}")
 
+        # TODO(dpw): loop over all the shards
+        shard = 0
         models = [
             UserModel.from_json(jstr)
             for jstr in self.data_store.mget(klist, shard)
@@ -122,10 +129,26 @@ class UserDb:
             status=model.status,
         )
 
-    def email_index_key(self, email: str) -> str:
-        """Return the key used for this index."""
-        return f"eidx{email}"
+    def find_by_email(self, email: str) -> UserModel | list:
+        """Return a list of all hits for the given email.  Could be an empty list."""
+        value = self.email_index(email, '*')
+        members = self.data_store.index_search(UserDb.EMAIL_INDEX_KEY, value)
 
-    def phone_index_key(self, phone: str) -> str:
+        n = len(email) + 1
+        keys = [m[n:] for m in members]
+
+        match len(keys):
+            case 0:
+                return []
+            case 1:
+                return self.fetch(keys[0])
+            case _other:
+                return self.models(keys)
+        
+    def email_index(self, email: str, key: str) -> str:
+        """Return the email index value of email:key."""
+        return f"{email}:{key}"
+
+    def phone_index(self, phone: str, key:str) -> str:
         """Return the key used for this index."""
-        return f"eidx{phone}"
+        return f"{phone}:{key}"

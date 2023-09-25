@@ -30,11 +30,13 @@ class DataStoreConfig:
         env = os.getenv("PETNET_ENV", "dev")
         auth = os.getenv("PETNET_DBAUTH")
         port = int(os.getenv("PETNET_DBPORT"))
+        host = os.getenv("PETNET_DBHOST")
+        name = f"pet-db-{port}"
 
         cfg = cls(
             env=env,
-            name="petnet-db",
-            host="localhost",
+            name=name,
+            host=host,
             port=port,
             auth=auth,
             db_number=db_number,
@@ -128,3 +130,14 @@ class DataStore:
         db = self.get_connection(shard)
 
         return db.scan_iter(prefix)
+
+    def index_search(self, index_key: str, value: str, shard: int = 0) -> list[str]:
+        """Search the given index for a member that matches value.  Searches all shards."""
+        db = self.get_connection(shard)
+        pipe = db.pipeline()
+        pipe.scard(index_key)
+        count = pipe.execute()[0]
+        pipe.sscan(index_key, 0, value, count)
+        _hit, hits = pipe.execute()[0]
+
+        return hits

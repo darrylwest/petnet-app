@@ -33,7 +33,7 @@ class Person:
 
 
 class UserModel(BaseModel, frozen=True):
-    """User data model."""
+    """User data model. Immutable (frozen)."""
 
     key: str
     version: Version

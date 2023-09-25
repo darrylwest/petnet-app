@@ -4,7 +4,7 @@ from rich import inspect
 from tests.fake_data_store import FakeDataStore
 from petnet_app.db.user_db import UserDb
 from petnet_app.db.data_store import DataStore, DataStoreConfig
-from petnet_app.models.user import UserModel, Person
+from petnet_app.models.user import Person
 from petnet_app.models.version import Version
 from petnet_app.models.model_validations import ModelVersionError, ModelValidationError
 

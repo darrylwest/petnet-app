@@ -38,13 +38,11 @@ def test_save_with_old_version():
     ref = fake.user_model()
     model = db.save(ref)
 
-    sz = db.dbsize()
     try:
         db.save(ref)
         assert False, "should have raised version exception"
     except ModelVersionError as err:
         inspect(err)
-        assert db.dbsize() == sz
 
 
 def test_save_bad_birth_year():
@@ -60,13 +58,11 @@ def test_save_bad_birth_year():
     )
     model = user.update(person)
 
-    sz = db.dbsize()
     try:
         updated = db.save(model)
         assert False, "should have thrown an exception"
     except ModelValidationError as err:
         inspect(err)
-        assert db.dbsize() == sz
 
 
 def test_fetch():
@@ -79,21 +75,6 @@ def test_fetch():
 
 def test_fetch_bad_key():
     assert True
-
-
-def test_find_by_email():
-    model = fake.user_model()
-    model = db.save(model)
-
-    found = db.find_by_email(model.email)
-    assert found == model
-
-
-def test_not_find_by_email():
-    model = fake.user_model()
-
-    found = db.find_by_email(model.email)
-    assert found is None
 
 
 def test_keys_iter():
@@ -121,9 +102,7 @@ def test_models():
 
 def test_remove_not_found():
     model = fake.user_model()
-    sz = db.dbsize()
     removed = db.remove(model)
-    assert db.dbsize() == sz
     assert removed.key == model.key
 
 

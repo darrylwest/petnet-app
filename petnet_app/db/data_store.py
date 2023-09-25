@@ -1,21 +1,19 @@
 """DataStore implementing the pickle database."""
 
 import logging
-from pathlib import Path
-from typing import Iterable, Union, Self
-from dataclasses import dataclass
 import os
+from dataclasses import dataclass
+from typing import Iterable, Self, Union
 
 import redis
 from redis.client import Redis
 from redis.exceptions import ConnectionError as RedisConnectionError
 
-
 log = logging.getLogger("db")
 
 
 @dataclass
-class DataStoreConfig():
+class DataStoreConfig:
     """DataStore config with redis unix socket or pickledb json file."""
 
     env: str
@@ -44,7 +42,7 @@ class DataStoreConfig():
         )
 
         # TODO(dpw): validate this first...
-        
+
         return cfg
 
 
@@ -55,7 +53,6 @@ class DataStore:
         """Initialize and connect to the database."""
         self.cfg = cfg
         self.conn = [None for _ in range(cfg.shard_count)]
-
 
     def connect(self, shard: int) -> Redis:
         """Connect to redis using shard."""
@@ -87,7 +84,9 @@ class DataStore:
                 self.connect(shard)
             except RedisConnectionError as err:
                 cfg = self.cfg
-                err.add_note(f"Redis connection error attempting to connect to {cfg.name}-{shard}")
+                err.add_note(
+                    f"Redis connection error attempting to connect to {cfg.name}-{shard}",
+                )
                 err.add_note(f"{cfg.host}:{cfg.port + shard} -> {err}")
                 raise ValueException("redis connect error") from err
 
@@ -124,9 +123,8 @@ class DataStore:
         db = self.get_connection(shard)
         return db.set(key, value)
 
-    def keys_iter(self, prefix: str = '*', shard: int = 0) -> Iterable:
+    def keys_iter(self, prefix: str = "*", shard: int = 0) -> Iterable:
         """Return a generator over all keys for the given shard."""
         db = self.get_connection(shard)
 
         return db.scan_iter(prefix)
-

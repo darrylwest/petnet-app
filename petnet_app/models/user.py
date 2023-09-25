@@ -64,7 +64,6 @@ class UserModel(BaseModel, frozen=True):
 
         return None
 
-
     @classmethod
     def create(cls, person: Person) -> Self:
         """Create a new user model and assign new key, version and set status."""
@@ -95,14 +94,14 @@ class UserModel(BaseModel, frozen=True):
         )
 
     def to_person(self) -> Person:
-        """Return the mutable person for this model"""
+        """Return the mutable person for this model."""
         return Person(
             first_name=self.first_name,
             last_name=self.last_name,
             email=self.email,
             phone=self.phone,
             birth_year=self.birth_year,
-            status=self.status
+            status=self.status,
         )
 
     @staticmethod

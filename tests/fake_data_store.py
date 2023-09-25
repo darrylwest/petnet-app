@@ -8,7 +8,6 @@ from petnet_app.models.user import Person, UserModel, keygen
 from petnet_app.models.version import Version
 from petnet_app.models.status import Status
 
-
 class FakeDataStore:
     def __init__(self):
         """Init the data store with a faker, today, etc"""

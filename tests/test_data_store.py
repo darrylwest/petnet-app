@@ -1,22 +1,19 @@
 """Test Data Store"""
 
 from rich import inspect
-from pydomkeys.keys import KeyGen
 from tests.fake_data_store import FakeDataStore
 from petnet_app.db.data_store import DataStore, DataStoreConfig
 
 fake = FakeDataStore()
 
-keygen = KeyGen.create("ST", 1)
-
-cfg = DataStoreConfig.create(keygen)
+cfg = DataStoreConfig.create(0, 1)
 
 store = DataStore(cfg)
 
 
 def test_exists():
-    key = cfg.keygen.route_key()
-    assert not store.exists(key), "should not exist"
+    model = fake.user_model()
+    assert not store.exists(model.key), "should not exist"
 
 
 def test_dbsize():

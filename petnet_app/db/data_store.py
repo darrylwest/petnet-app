@@ -8,12 +8,10 @@ import os
 
 import redis
 from redis.client import Redis
-# from redis.exceptions import DbConnectError
+from redis.exceptions import ConnectionError as RedisConnectionError
 
-from pydomkeys.keys import KeyGen
 
 log = logging.getLogger("db")
-
 
 
 @dataclass
@@ -25,11 +23,12 @@ class DataStoreConfig():
     host: str
     port: int
     auth: str
-    keygen: KeyGen
+    db_number: int
+    shard_count: int
 
     @classmethod
-    def create(cls, keygen: KeyGen) -> Self:
-        """Create the db config instance."""
+    def create(cls, db_number: int, shard_count: int = 1) -> Self:
+        """Create the db config instance with the model's db number and shard count."""
         env = os.getenv("PETNET_ENV", "dev")
         auth = os.getenv("PETNET_DBAUTH")
         port = int(os.getenv("PETNET_DBPORT"))
@@ -39,8 +38,9 @@ class DataStoreConfig():
             name="petnet-db",
             host="localhost",
             port=port,
-            keygen=keygen,
             auth=auth,
+            db_number=db_number,
+            shard_count=shard_count,
         )
 
         # TODO(dpw): validate this first...
@@ -54,11 +54,7 @@ class DataStore:
     def __init__(self, cfg: DataStoreConfig):
         """Initialize and connect to the database."""
         self.cfg = cfg
-
-        self.keygen = cfg.keygen
-        self.shard_count = self.keygen.domain_router.shard_count
-
-        self.conn = [None for _ in range(self.shard_count)]
+        self.conn = [None for _ in range(cfg.shard_count)]
 
 
     def connect(self, shard: int) -> Redis:
@@ -66,6 +62,7 @@ class DataStore:
         cfg = self.cfg
         port = cfg.port + shard
         name = f"{cfg.name}-{shard}"
+        dbnum = 1
 
         db = redis.Redis(
             host=cfg.host,
@@ -73,7 +70,11 @@ class DataStore:
             password=cfg.auth,
             client_name=name,
             health_check_interval=30,
+            db=dbnum,
         )
+
+        # this is to establish the RESP 3 protocol
+        db.connection_pool.get_connection("PING", None).send_command("HELLO", 3)
 
         self.conn[shard] = db
 
@@ -81,42 +82,53 @@ class DataStore:
 
     def get_connection(self, shard: int = 0):
         """Return the redis connection for the specified shard."""
-        return self.conn[shard] if self.conn[shard] is not None else self.connect(shard)
+        if self.conn[0] is None:
+            try:
+                self.connect(shard)
+            except RedisConnectionError as err:
+                cfg = self.cfg
+                err.add_note(f"Redis connection error attempting to connect to {cfg.name}-{shard}")
+                err.add_note(f"{cfg.host}:{cfg.port + shard} -> {err}")
+                raise ValueException("redis connect error") from err
+
+        return self.conn[shard]
 
     def dbsize(self) -> int:
         """Return the total number of rows in this data store, summing up all the shards."""
-        return 0
+        db = self.get_connection(0)
+        return db.dbsize()
 
-    def exists(self, key: str) -> bool:
-        """Return true if this key is in the database, else false."""
-        # shard = self.keygen.parse_route(key)
-        return false
+    def pipeline(self, shard: int = 0) -> bool:
+        """Return a pipeline for the specified shard."""
+        db = self.get_connection(shard)
+        return db.pipeline()
 
-    def get(self, key: str) -> Union[str, None]:
+    def exists(self, key: str, shard: int = 0) -> bool:
+        """Return True if this key is in the database, else False."""
+        db = self.get_connection(shard)
+
+        return db.exists(key) == 1
+
+    def get(self, key: str, shard: int = 0) -> Union[str, None]:
         """Get the model by key."""
-        # shard = self.keygen.parse_route(key)
-        return None
+        db = self.get_connection(shard)
+        return db.get(key)
 
-
-    def put(self, key: str, value: str) -> bool:
+    def put(self, key: str, value: str, shard: int = 0) -> bool:
         """Put/Set the key/value."""
-        # shard = self.keygen.parse_route(key)
+        db = self.get_connection(shard)
         return db.set(key, value)
 
-    def keys_iter(self, shard: int) -> Iterable:
+    def keys_iter(self, prefix: str = '*', shard: int = 0) -> Iterable:
         """Return a generator over all keys for the given shard."""
-        db = self.dbs[shard]
+        db = self.get_connection(shard)
 
-        return (key for key in db.getall().mapping.keys())
+        return db.scan_iter(prefix)
 
-    def remove(self, key: str, index_key: str):
+    def remove(self, key: str, shard: int = 0):
         """Remove the value pointed to by the key. Return true if the key exists and was deleted."""
         shard = self.keygen.parse_route(key)
-        db = self.dbs[shard]
-        self.index.rem(index_key)
+        db = self.get_connection(shard)
 
         return db.rem(key)
 
-    def update_index(self, key, value):
-        """Update the index."""
-        self.index.set(key, value)

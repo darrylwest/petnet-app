@@ -22,7 +22,7 @@ log = logging.getLogger("mdl")
 
 @dataclass
 class Person:
-    """Person tuple used to construct or update a UserModel."""
+    """Person dataclass used to construct or update a UserModel."""
 
     first_name: str
     last_name: str
@@ -86,6 +86,17 @@ class UserModel(BaseModel, frozen=True):
             phone=person.phone,
             birth_year=person.birth_year,
             status=person.status,
+        )
+
+    def to_person(self) -> Person:
+        """Return the mutable person for this model"""
+        return Person(
+            first_name=self.first_name,
+            last_name=self.last_name,
+            email=self.email,
+            phone=self.phone,
+            birth_year=self.birth_year,
+            status=self.status
         )
 
     @staticmethod

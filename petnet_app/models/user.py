@@ -55,9 +55,15 @@ class UserModel(BaseModel, frozen=True):
         return errors
 
     @classmethod
-    def from_json(cls, json_string: str) -> Self:
+    def from_json(cls, jstr: str) -> Self | None:
         """Parse the json string and return a user model."""
-        return cls.model_validate_json(json_string)
+        try:
+            return cls.model_validate_json(jstr)
+        except ValidationError as err:
+            log.error(err)
+
+        return None
+
 
     @classmethod
     def create(cls, person: Person) -> Self:

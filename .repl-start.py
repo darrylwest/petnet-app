@@ -33,8 +33,13 @@ from petnet_app.config import Config
 
 fake = fake_data_store.FakeDataStore()
 
-def create_user_db():
+def create_user_data_store():
     cfg = DataStoreConfig.create(db_number=1, shard_count=1)
     data_store = DataStore(cfg)
     return data_store
 
+def create_user_db():
+    ds = create_user_data_store()
+    user_db = UserDb(ds)
+
+    return user_db

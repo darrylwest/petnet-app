@@ -114,6 +114,11 @@ class DataStore:
         db = self.get_connection(shard)
         return db.get(key)
 
+    def mget(self, key_list: list, shard: int = 0) -> list[str]:
+        """Return a list of json strings from the list of keys. Filter out None types."""
+        db = self.get_connection(shard)
+        return [jstr for jstr in db.mget(key_list) if jstr is not None]
+
     def put(self, key: str, value: str, shard: int = 0) -> bool:
         """Put/Set the key/value."""
         db = self.get_connection(shard)
@@ -124,11 +129,4 @@ class DataStore:
         db = self.get_connection(shard)
 
         return db.scan_iter(prefix)
-
-    def remove(self, key: str, shard: int = 0):
-        """Remove the value pointed to by the key. Return true if the key exists and was deleted."""
-        shard = self.keygen.parse_route(key)
-        db = self.get_connection(shard)
-
-        return db.rem(key)
 

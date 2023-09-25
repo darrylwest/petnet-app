@@ -88,7 +88,7 @@ class DataStore:
                     f"Redis connection error attempting to connect to {cfg.name}-{shard}",
                 )
                 err.add_note(f"{cfg.host}:{cfg.port + shard} -> {err}")
-                raise ValueException("redis connect error") from err
+                raise ValueError("redis connect error") from err
 
         return self.conn[shard]
 

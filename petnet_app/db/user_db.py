@@ -52,10 +52,11 @@ class UserDb:
         pipe.set(self.phone_index_key(model.phone), model.key)
         results = pipe.execute()
 
-        log.info(f"save: {results}")
         if not all(results):
             log.error(f"Error saving: {model}, {results}")
 
+        pipe.reset()
+        
         return model
 
     def fetch(self, key: str) -> Union[UserModel, None]:

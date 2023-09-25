@@ -5,7 +5,7 @@ import logging
 from dataclasses import dataclass
 from typing import Self
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ValidationError
 from pydomkeys.keys import KeyGen
 
 from petnet_app.models.model_validations import ModelValidations

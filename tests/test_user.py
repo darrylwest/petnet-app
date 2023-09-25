@@ -79,6 +79,11 @@ def test_from_json():
     assert isinstance(model, UserModel)
     assert ref == model
 
+def test_from_json_bad():
+    jstr = '{"bad":"json"}'
+    resp = UserModel.from_json(jstr)
+    assert resp is None
+
 
 def test_create():
     user = create_user_model()
@@ -123,3 +128,10 @@ def test_update():
     assert updated.birth_year == model.birth_year
     assert updated.status.label == "active"
     assert updated.status.value == 127
+
+def test_to_persion():
+    model = fake.user_model()
+    person = model.to_person()
+    assert model.email == person.email
+    assert model.phone == person.phone
+    assert model.status == person.status

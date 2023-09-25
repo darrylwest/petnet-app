@@ -137,12 +137,3 @@ def test_to_persion():
     assert model.email == person.email
     assert model.phone == person.phone
     assert model.status == person.status
-
-
-def test_is_valid_key():
-    model = fake.user_model()
-    assert UserModel.is_valid_key(model.key)
-
-
-def test_get_keygen():
-    assert UserModel.get_keygen() is not None

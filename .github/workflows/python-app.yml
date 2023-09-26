@@ -23,18 +23,28 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.11"
+
+    - name: redis-server install
+      run: |
+      sudo apt-get install -y redis-tools redis-server
+      redis-server ./tests/test.conf
+
+    - name: verify redis running
+      run: redis-cli -a testpw ping
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install poetry
         poetry install
+
     - name: Lint with ruff and pylint
       run: |
         poetry run ruff check ./petnet_app/
         poetry run pylint ./petnet_app/
     - name: Unit Tests
       run: |
-        poetry run pytest -m "not redis" --cov=petnet_app/ --cov-branch tests/
+        poetry run pytest --cov=petnet_app/ --cov-branch tests/
     - name: mypy
       run: |
         poetry run mypy petnet_app/

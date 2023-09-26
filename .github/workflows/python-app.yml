@@ -27,7 +27,7 @@ jobs:
     - name: redis-server install
       run: |
         sudo apt-get install -y redis-tools redis-server
-        redis-server ./tests/test.conf
+        redis-server ./tests/redis-test.conf
 
     - name: verify redis running
       run: redis-cli -a testpw ping

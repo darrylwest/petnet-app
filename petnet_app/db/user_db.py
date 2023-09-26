@@ -12,7 +12,6 @@ from petnet_app.models.user import UserModel
 log = logging.getLogger("db")
 
 
-
 class UserDb:
     """UserDb API."""
 
@@ -39,17 +38,17 @@ class UserDb:
             log.warning(msg)
             raise ModelValidationError(msg, errors)
 
-        ds = self.data_store
-        exists = ds.exists(model.key)
+        store = self.data_store
+        exists = store.exists(model.key)
         if exists and not self.check_version(model):
             msg = f"version mismatch key: {model.key}, version: {model.version}"
             log.warning(msg)
             raise ModelVersionError(msg)
 
         model = self.update_version(model)
-        pipe = ds.pipeline()
+        pipe = store.pipeline()
         pipe.set(model.key, model.model_dump_json())
-        pipe.set(self.email_index_key(model.email),  model.key)
+        pipe.set(self.email_index_key(model.email), model.key)
         pipe.set(self.phone_index_key(model.phone), model.key)
 
         results = pipe.execute()
@@ -137,7 +136,7 @@ class UserDb:
             return self.fetch(key)
 
         return None
-        
+
     def email_index_key(self, email: str) -> str:
         """Return the key used for this index."""
         return f"eIX{email}"

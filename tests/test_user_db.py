@@ -136,4 +136,4 @@ def test_check_version_bad():
 def test_bad_save_response():
     response = [True, True, False]
     model = fake.user_model()
-    assert db.handle_save_transaction(response, model)
+    assert db.handle_save_transaction(response, model) is None, 'should return none'

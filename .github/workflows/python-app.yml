@@ -52,7 +52,7 @@ jobs:
         poetry run pylint ./petnet_app/
     - name: Unit Tests
       run: |
-        poetry run pytest --cov=petnet_app/ --cov-branch tests/
+        poetry run pytest -m "not redis" --cov=petnet_app/ --cov-branch tests/
     - name: mypy
       run: |
         poetry run mypy petnet_app/

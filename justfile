@@ -8,6 +8,7 @@ alias cov := cover
 alias form := format
 alias pre := precommit
 alias todo := todos
+alias sred := startTestRedis
 
 # run the application
 run:
@@ -17,11 +18,20 @@ run:
 integration:
     poetry run ./tests/integration.py
 
+# start the redis test server
+startTestRedis:
+    redis-server ./tests/redis-test.conf
+    redis-cli -a testpw ping
+
+stopTestRedis:
+    redis-cli -a testpw shutdown
+
 # run the standard tests (default target)
-test:
+test $PETNET_DBHOST="localhost" $PETNET_DBAUTH="testpw" $PETNET_DBPORT="6379":
     /bin/rm -fr data
     /bin/rm -fr logs
-    poetry run pytest --cov=petnet_app/ --cov-branch tests/
+
+    pytest --cov=petnet_app/ --cov-branch tests/
 
 # run the standard tests + clippy and fmt
 cover:

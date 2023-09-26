@@ -1,6 +1,7 @@
 """User model."""
 
 
+import os
 import logging
 from dataclasses import dataclass
 from typing import Self
@@ -13,7 +14,8 @@ from petnet_app.models.status import Status
 from petnet_app.models.version import Version
 
 # the user keygen
-keygen = KeyGen.create("US", 4)
+shards = int(os.getenv("USER_DB_SHARDS", "1"))
+keygen = KeyGen.create("US", shards)
 
 validator = ModelValidations()
 

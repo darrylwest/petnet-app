@@ -27,10 +27,10 @@ class DataStoreConfig:
     @classmethod
     def create(cls, db_number: int, shard_count: int = 1) -> Self:
         """Create the db config instance with the model's db number and shard count."""
-        env = os.getenv("PETNET_ENV", "dev")
-        auth = os.getenv("PETNET_DBAUTH", "bad-auth")
-        port = int(os.getenv("PETNET_DBPORT", "0"))
-        host = os.getenv("PETNET_DBHOST", "")
+        env = os.getenv("PETNET_ENV", "test")
+        auth = os.getenv("PETNET_DBAUTH", "testpw")
+        port = int(os.getenv("PETNET_DBPORT", "6379"))
+        host = os.getenv("PETNET_DBHOST", "localhost")
         name = f"pet-db-{port}"
 
         cfg = cls(

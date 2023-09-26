@@ -31,7 +31,7 @@ test $PETNET_DBHOST="localhost" $PETNET_DBAUTH="testpw" $PETNET_DBPORT="6379":
     /bin/rm -fr data
     /bin/rm -fr logs
 
-    pytest --cov=petnet_app/ --cov-branch tests/
+    poetry run pytest --cov=petnet_app/ --cov-branch tests/
 
 # run the standard tests + clippy and fmt
 cover:

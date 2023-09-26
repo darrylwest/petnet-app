@@ -16,9 +16,6 @@ log = logging.getLogger("db")
 class UserDb:
     """UserDb API."""
 
-    EMAIL_INDEX_KEY: str = "user_email_idx"
-    PHONE_INDEX_KEY: str = "phone_email_idx"
-
     def __init__(self, data_store: DataStore):
         """Initialize UserDb with an active datastore."""
         self.data_store = data_store
@@ -52,8 +49,8 @@ class UserDb:
         model = self.update_version(model)
         pipe = ds.pipeline()
         pipe.set(model.key, model.model_dump_json())
-        pipe.sadd(UserDb.EMAIL_INDEX_KEY, self.email_index(model.email,  model.key))
-        pipe.sadd(UserDb.PHONE_INDEX_KEY, self.phone_index(model.phone, model.key))
+        pipe.set(self.email_index_key(model.email),  model.key)
+        pipe.set(self.phone_index_key(model.phone), model.key)
 
         results = pipe.execute()
 
@@ -129,26 +126,18 @@ class UserDb:
             status=model.status,
         )
 
-    def find_by_email(self, email: str) -> UserModel | list:
-        """Return a list of all hits for the given email.  Could be an empty list."""
-        value = self.email_index(email, '*')
-        members = self.data_store.index_search(UserDb.EMAIL_INDEX_KEY, value)
+    def find_by_email(self, email: str) -> UserModel | None:
+        """Return the user that has this unique email address, or None if not found."""
+        email_key = self.email_index_key(email)
+        if key := self.data_store.get(email_key):
+            return self.fetch(key)
 
-        n = len(email) + 1
-        keys = [m[n:] for m in members]
-
-        match len(keys):
-            case 0:
-                return []
-            case 1:
-                return self.fetch(keys[0])
-            case _other:
-                return self.models(keys)
+        return None
         
-    def email_index(self, email: str, key: str) -> str:
-        """Return the email index value of email:key."""
-        return f"{email}:{key}"
-
-    def phone_index(self, phone: str, key:str) -> str:
+    def email_index_key(self, email: str) -> str:
         """Return the key used for this index."""
-        return f"{phone}:{key}"
+        return f"eIX{email}"
+
+    def phone_index_key(self, phone: str) -> str:
+        """Return the key used for this index."""
+        return f"pIX{phone}"

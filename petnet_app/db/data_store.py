@@ -130,14 +130,3 @@ class DataStore:
         db = self.get_connection(shard)
 
         return db.scan_iter(prefix)
-
-    def index_search(self, index_key: str, value: str, shard: int = 0) -> list[str]:
-        """Search the given index for a member that matches value.  Searches all shards."""
-        db = self.get_connection(shard)
-        pipe = db.pipeline()
-        pipe.scard(index_key)
-        count = pipe.execute()[0]
-        pipe.sscan(index_key, 0, value, count)
-        _hit, hits = pipe.execute()[0]
-
-        return hits

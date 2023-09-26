@@ -24,20 +24,20 @@ jobs:
       with:
         python-version: "3.11"
 
-    - name: redis-server install
+    - name: redis-server version 7.x install
       run: |
-        sudo apt-get install -y redis-tools redis-server
+        sudo add-apt-repository ppa:redislabs/redis
+        sudo apt update
+        sudo apt install -y redis-tools redis-server
+        redis-server --version
         redis-server ./tests/redis-test.conf
 
     - name: set redis pw env vars
       run: echo "PETNET_DBAUTH=testpw" >> $GITHUB_ENV
 
-    - name: test the redis pw var
-      run: echo "the value of PETNET_DBAUTH is $PETNET_DBAUTH"
-
     - name: verify redis running
       run: |
-        redis-server --version
+        echo "the value of PETNET_DBAUTH is $PETNET_DBAUTH"
         redis-cli -a "$PETNET_DBAUTH" ping
 
     - name: Install dependencies

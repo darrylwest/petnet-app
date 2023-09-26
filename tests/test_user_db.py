@@ -85,7 +85,8 @@ def test_fetch():
 
 
 def test_fetch_bad_key():
-    assert True
+    key = fake.route_key()
+    assert db.fetch(key) is None
 
 
 def test_keys_iter():

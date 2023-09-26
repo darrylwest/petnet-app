@@ -36,6 +36,9 @@ class FakeDataStore:
             status=Status.new(0),
         )
 
+    def route_key(self) -> str:
+        return keygen.route_key()
+        
     def user_model(self, person: Person = None) -> UserModel:
         now = time.time_ns()
         version = Version.create()

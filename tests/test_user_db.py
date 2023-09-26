@@ -132,3 +132,8 @@ def test_check_version_bad():
 
     ok = db.check_version(user)
     assert ok, "should be in database with same version"
+
+def test_bad_save_response():
+    response = [True, True, False]
+    model = fake.user_model()
+    assert db.handle_save_transaction(response, model)

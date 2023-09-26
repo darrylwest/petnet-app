@@ -54,12 +54,16 @@ class UserDb:
 
         results = pipe.execute()
 
-        if not all(results):
-            log.error(f"Error saving: {model}, {results}")
+        self.handle_save_transaction(results, model)
 
         pipe.reset()
 
         return model
+
+    def handle_save_transaction(self, results: list, model: UserModel) -> None:
+        """Integigate the save response."""
+        if not all(results):
+            log.error(f"Error saving: {model}, {results}")
 
     def fetch(self, key: str) -> Union[UserModel, None]:
         """Return the UserModel or None if not found."""

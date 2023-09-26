@@ -8,15 +8,26 @@ fake = FakeDataStore()
 
 cfg = DataStoreConfig.create(0, 1)
 
-store = DataStore(cfg)
-
 
 def test_exists():
     model = fake.user_model()
+    store = DataStore(cfg)
     assert not store.exists(model.key), "should not exist"
+
+    
+def test_bad_connect():
+    cfg = DataStoreConfig.create(0, 1)
+    cfg.port = 24999
+    store = DataStore(cfg)
+    try:
+        db = store.get_connection()
+        assert False, 'should not connect'
+    except ValueError:
+        assert True
 
 
 def test_dbsize():
+    store = DataStore(cfg)
     sz = store.dbsize()
     assert sz >= 0
 
@@ -28,6 +39,7 @@ def test_dbsize():
 
 
 def test_put():
+    store = DataStore(cfg)
     sz = store.dbsize()
 
     ref = fake.user_model()

@@ -64,6 +64,17 @@ def test_save_bad_birth_year():
     except ModelValidationError as err:
         inspect(err)
 
+def test_find_by_email():
+    model = fake.user_model()
+    user = db.save(model)
+
+    found = db.find_by_email(user.email)
+    assert found.email == user.email
+
+def test_find_by_email_bad():
+    model = fake.user_model()
+    found = db.find_by_email(model.email)
+    assert found is None
 
 def test_fetch():
     model = fake.user_model()
@@ -107,8 +118,12 @@ def test_remove_not_found():
 
 
 def test_remove():
-    assert True
+    model = fake.user_model()
+    user = db.save(model)
 
+    deleted = db.remove(user)
+    assert deleted is not None
+    
 
 def test_check_version_on_insert():
     model = fake.user_model()
@@ -137,3 +152,4 @@ def test_bad_save_response():
     response = [True, True, False]
     model = fake.user_model()
     assert db.handle_save_transaction(response, model) is None, 'should return none'
+

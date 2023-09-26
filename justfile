@@ -74,7 +74,12 @@ repl:
     poetry run bpython -i .repl-start.py
 
 # precommit tasks including test, cover, format, ruff, refurb and mypy
-precommit:
+precommit $PETNET_DBHOST="localhost" $PETNET_DBAUTH="testpw" $PETNET_DBPORT="6379":
     clear
-    just test cover format lint refurb mypy
+    /bin/rm -fr data
+    /bin/rm -fr logs
+
+    poetry run pytest --cov=petnet_app/ --cov-branch tests/
+
+    just cover format lint refurb mypy
 

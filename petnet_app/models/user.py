@@ -1,8 +1,8 @@
 """User model."""
 
 
-import os
 import logging
+import os
 from dataclasses import dataclass
 from typing import Self
 

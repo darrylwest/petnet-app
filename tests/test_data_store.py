@@ -1,5 +1,6 @@
 """Test Data Store"""
 
+import pytest
 from rich import inspect
 from tests.fake_data_store import FakeDataStore
 from petnet_app.db.data_store import DataStore, DataStoreConfig
@@ -9,6 +10,7 @@ fake = FakeDataStore()
 cfg = DataStoreConfig.create(0, 1)
 
 
+@pytest.mark.redis
 def test_exists():
     model = fake.user_model()
     store = DataStore(cfg)
@@ -26,6 +28,7 @@ def test_bad_connect():
         assert True
 
 
+@pytest.mark.redis
 def test_dbsize():
     store = DataStore(cfg)
     sz = store.dbsize()
@@ -38,6 +41,7 @@ def test_dbsize():
     assert store.dbsize() == sz + 1
 
 
+@pytest.mark.redis
 def test_put():
     store = DataStore(cfg)
     sz = store.dbsize()

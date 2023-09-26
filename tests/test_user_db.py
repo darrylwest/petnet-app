@@ -1,5 +1,6 @@
 """Test the UserDb."""
 
+import pytest
 from rich import inspect
 from tests.fake_data_store import FakeDataStore
 from tests.clocker import clock
@@ -20,6 +21,7 @@ db = UserDb(store)
 
 
 @clock
+@pytest.mark.redis
 def test_save():
     """Save a new user model."""
     model = fake.user_model()
@@ -37,6 +39,7 @@ def test_save():
 
 
 @clock
+@pytest.mark.redis
 def test_save_with_old_version():
     ref = fake.user_model()
     model = db.save(ref)
@@ -49,6 +52,7 @@ def test_save_with_old_version():
 
 
 @clock
+@pytest.mark.redis
 def test_save_bad_birth_year():
     user = fake.user_model()
     today = datetime.now(tz=timezone.utc)
@@ -70,6 +74,7 @@ def test_save_bad_birth_year():
 
 
 @clock
+@pytest.mark.redis
 def test_find_by_email():
     model = fake.user_model()
     user = db.save(model)
@@ -79,6 +84,7 @@ def test_find_by_email():
 
 
 @clock
+@pytest.mark.redis
 def test_find_by_email_bad():
     model = fake.user_model()
     found = db.find_by_email(model.email)
@@ -86,6 +92,7 @@ def test_find_by_email_bad():
 
 
 @clock
+@pytest.mark.redis
 def test_fetch():
     model = fake.user_model()
     model = db.save(model)
@@ -95,12 +102,14 @@ def test_fetch():
 
 
 @clock
+@pytest.mark.redis
 def test_fetch_bad_key():
     key = fake.route_key()
     assert db.fetch(key) is None
 
 
 @clock
+@pytest.mark.redis
 def test_keys_iter():
     count = 10
     models = [fake.user_model() for _ in range(count)]
@@ -119,6 +128,7 @@ def test_keys_iter():
 
 
 @clock
+@pytest.mark.redis
 def test_models():
     count = 10
     models = fake.user_models(count)
@@ -132,6 +142,7 @@ def test_models():
 
 
 @clock
+@pytest.mark.redis
 def test_remove_not_found():
     model = fake.user_model()
     removed = db.remove(model)
@@ -139,6 +150,7 @@ def test_remove_not_found():
 
 
 @clock
+@pytest.mark.redis
 def test_remove():
     model = fake.user_model()
     user = db.save(model)
@@ -148,12 +160,14 @@ def test_remove():
 
 
 @clock
+@pytest.mark.redis
 def test_check_version_on_insert():
     model = fake.user_model()
     assert db.check_version(model), "user should not exist in database"
 
 
 @clock
+@pytest.mark.redis
 def test_check_version():
     model = fake.user_model()
     user = db.save(model)
@@ -163,6 +177,7 @@ def test_check_version():
 
 
 @clock
+@pytest.mark.redis
 def test_check_version_bad():
     model = fake.user_model()
     user = db.save(model)
@@ -175,6 +190,7 @@ def test_check_version_bad():
 
 
 @clock
+@pytest.mark.redis
 def test_bad_save_response():
     response = [True, True, False]
     model = fake.user_model()

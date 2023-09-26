@@ -2,6 +2,7 @@
 
 from rich import inspect
 from tests.fake_data_store import FakeDataStore
+from tests.clocker import clock
 from petnet_app.db.user_db import UserDb
 from petnet_app.db.data_store import DataStore, DataStoreConfig
 from petnet_app.models.user import Person
@@ -18,6 +19,7 @@ store = DataStore(cfg)
 db = UserDb(store)
 
 
+@clock
 def test_save():
     """Save a new user model."""
     model = fake.user_model()
@@ -34,6 +36,7 @@ def test_save():
     # TODO(dpw): check version updated
 
 
+@clock
 def test_save_with_old_version():
     ref = fake.user_model()
     model = db.save(ref)
@@ -45,6 +48,7 @@ def test_save_with_old_version():
         inspect(err)
 
 
+@clock
 def test_save_bad_birth_year():
     user = fake.user_model()
     today = datetime.now(tz=timezone.utc)
@@ -65,6 +69,7 @@ def test_save_bad_birth_year():
         inspect(err)
 
 
+@clock
 def test_find_by_email():
     model = fake.user_model()
     user = db.save(model)
@@ -73,12 +78,14 @@ def test_find_by_email():
     assert found.email == user.email
 
 
+@clock
 def test_find_by_email_bad():
     model = fake.user_model()
     found = db.find_by_email(model.email)
     assert found is None
 
 
+@clock
 def test_fetch():
     model = fake.user_model()
     model = db.save(model)
@@ -87,22 +94,31 @@ def test_fetch():
     assert fetched == model
 
 
+@clock
 def test_fetch_bad_key():
     key = fake.route_key()
     assert db.fetch(key) is None
 
 
+@clock
 def test_keys_iter():
     count = 10
     models = [fake.user_model() for _ in range(count)]
     for model in models:
         db.save(model)
 
-    keys = list(db.keys_iter(0))
+    kiter = db.keys_iter(0)
+    for i, key in enumerate(kiter):
+        assert len(key) == 16
+        if i >= count:
+            break
 
-    assert len(keys) >= 0
+    print(f"keys iterated over: {i}")
+
+    assert i >= count
 
 
+@clock
 def test_models():
     count = 10
     models = fake.user_models(count)
@@ -115,12 +131,14 @@ def test_models():
     assert len(models) == len(results)
 
 
+@clock
 def test_remove_not_found():
     model = fake.user_model()
     removed = db.remove(model)
     assert removed.key == model.key
 
 
+@clock
 def test_remove():
     model = fake.user_model()
     user = db.save(model)
@@ -129,11 +147,13 @@ def test_remove():
     assert deleted is not None
 
 
+@clock
 def test_check_version_on_insert():
     model = fake.user_model()
     assert db.check_version(model), "user should not exist in database"
 
 
+@clock
 def test_check_version():
     model = fake.user_model()
     user = db.save(model)
@@ -142,6 +162,7 @@ def test_check_version():
     assert ok, "should be in database with same version"
 
 
+@clock
 def test_check_version_bad():
     model = fake.user_model()
     user = db.save(model)
@@ -153,6 +174,7 @@ def test_check_version_bad():
     assert ok, "should be in database with same version"
 
 
+@clock
 def test_bad_save_response():
     response = [True, True, False]
     model = fake.user_model()

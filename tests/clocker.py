@@ -25,20 +25,3 @@ def clock(func):
         return result
 
     return clocked
-
-
-@clock
-def snooze(seconds):
-    time.sleep(seconds)
-    return "ok"
-
-
-def main(args: list) -> None:
-    for n in range(4):
-        s = ((n + 1) / 10) + 0.445
-        print("*" * 40, f"Calling snooze({s})")
-        snooze(s)
-
-
-if __name__ == "__main__":
-    main(sys.argv[1:])

@@ -28,9 +28,9 @@ class DataStoreConfig:
     def create(cls, db_number: int, shard_count: int = 1) -> Self:
         """Create the db config instance with the model's db number and shard count."""
         env = os.getenv("PETNET_ENV", "dev")
-        auth = os.getenv("PETNET_DBAUTH")
-        port = int(os.getenv("PETNET_DBPORT"))
-        host = os.getenv("PETNET_DBHOST")
+        auth = os.getenv("PETNET_DBAUTH", "bad-auth")
+        port = int(os.getenv("PETNET_DBPORT", "0"))
+        host = os.getenv("PETNET_DBHOST", "")
         name = f"pet-db-{port}"
 
         cfg = cls(
@@ -75,13 +75,13 @@ class DataStore:
         # this is to establish the RESP 3 protocol
         db.connection_pool.get_connection("PING", None).send_command("HELLO", 3)
 
-        self.conn[shard] = db
+        self.conn[shard] = db  # type: ignore[call-overload]
 
         return db
 
     def get_connection(self, shard: int = 0):
         """Return the redis connection for the specified shard."""
-        if self.conn[0] is None:
+        if self.conn[shard] is None:
             try:
                 self.connect(shard)
             except RedisConnectionError as err:

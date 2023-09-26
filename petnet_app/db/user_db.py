@@ -47,15 +47,15 @@ class UserDb:
 
         model = self.update_version(model)
         pipe = store.pipeline()
-        pipe.set(model.key, model.model_dump_json())
-        pipe.set(self.email_index_key(model.email), model.key)
-        pipe.set(self.phone_index_key(model.phone), model.key)
+        pipe.set(model.key, model.model_dump_json())  # type: ignore[attr-defined]
+        pipe.set(self.email_index_key(model.email), model.key)  # type: ignore[attr-defined]
+        pipe.set(self.phone_index_key(model.phone), model.key)  # type: ignore[attr-defined]
 
-        results = pipe.execute()
+        results = pipe.execute()  # type: ignore[attr-defined]
 
         self.handle_save_transaction(results, model)
 
-        pipe.reset()
+        pipe.reset()  # type: ignore[attr-defined]
 
         return model
 

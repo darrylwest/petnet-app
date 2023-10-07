@@ -4,9 +4,8 @@ A small application to demonstrate how to use `pydomkeys`.  PetNet Application .
 
 ## Implementations
 
-* pickleDB
 * redis
-* sqlite3
+* dragonfly 
 
 ## Domain Models
 
@@ -61,5 +60,5 @@ test the endpoints
 * consider a submodule of pydomkeys? $ git submodule add https://github.com/darrylwest/pydomkeys
 
 
-###### darryl.west | 2023.09.09
+###### darryl.west | 2023.10.07
 

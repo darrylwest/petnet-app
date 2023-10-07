@@ -40,8 +40,8 @@ cover:
 
 # invoke black, isort, ruff with --fix flag
 format:
-    black petnet_app/ tests/
-    isort petnet_app/
+    poetry run black petnet_app/ tests/
+    poetry run isort petnet_app/
     poetry run ruff check --fix ./petnet_app/
 
 # run ruff (no fix)

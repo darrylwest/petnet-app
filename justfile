@@ -2,6 +2,7 @@
 project := "petnet_app"
 
 export PYTHONPATH := "petnet_app/"
+export PYTHON := "/Library/Frameworks/Python.framework/Versions/3.11/bin/bpython"
 
 alias int := integration
 alias cov := cover

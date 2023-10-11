@@ -28,6 +28,7 @@ refurb = "^1.21.0"
 ruff = "^0.0.287"
 pytest-asyncio = "^0.21.1"
 httpx = "^0.24.1"
+bpython = "^0.24"
 
 [tool.ruff]
 # Enable the pycodestyle (`E`) and Pyflakes (`F`) rules by default.

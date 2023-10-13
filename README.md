@@ -59,6 +59,10 @@ test the endpoints
 * consider making this a submodule of pydomkeys? $ git submodule add https://github.com/darrylwest/petnet-app
 * consider a submodule of pydomkeys? $ git submodule add https://github.com/darrylwest/pydomkeys
 
+## References
 
-###### darryl.west | 2023.10.07
+* [FastAPI Tips](https://medium.com/@kasperjuunge/10-overlooked-fastapi-features-you-should-be-using-9ca53eb4c15b)
+* [Async Redis](https://redis.readthedocs.io/en/stable/advanced_features.html)
+
+###### darryl.west | 2023.10.13
 

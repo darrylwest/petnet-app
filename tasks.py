@@ -4,9 +4,17 @@ task runner, @see https://www.pyinvoke.org/
 
 from invoke import task
 
+@task(aliases=['startdb'])
+def start_test_db(ctx):
+    ctx.run('redis-server ./tests/redis-test.conf', pty=True)
+
+@task(aliases=['stopdb'])
+def stop_test_db(ctx):
+    ctx.run('redis-cli -a testpw shutdown', pty=True)
+
 @task
 def run(ctx):
-    ctx.run('poetry run uvicorn petnet_app.main:app --port 9001 --reload'
+    ctx.run('poetry run uvicorn petnet_app.main:app --port 9001 --reload', pty=True)
 
 @task
 def test(ctx):
